@@ -1,0 +1,350 @@
+/* Recent Research Activities Page Specific Styles */
+
+.recent-research {
+    padding: 140px 0 100px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+    position: relative;
+    min-height: calc(100vh - 200px);
+}
+
+.recent-research .section-header {
+    margin-bottom: 60px;
+}
+
+.recent-research .section-title {
+    position: relative;
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+    color: var(--dark);
+}
+
+.recent-research .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 70px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+}
+
+.recent-research .section-subtitle {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 800px;
+    margin-top: 15px;
+    line-height: 1.8;
+}
+
+.research-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.research-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transition: var(--transition);
+    border-top: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.research-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.research-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.research-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.research-card:hover::after {
+    transform: scaleX(1);
+}
+
+.research-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 18px;
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.5s ease;
+    filter: blur(10px);
+}
+
+.research-card:hover::before {
+    opacity: 0.4;
+    filter: blur(15px);
+}
+
+.research-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(30, 91, 168, 0.25), 0 0 35px rgba(231, 76, 60, 0.15);
+    border-top-color: var(--primary);
+}
+
+.research-card:hover::before {
+    transform: scaleX(1);
+}
+
+.research-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(30, 91, 168, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(30, 91, 168, 0.2);
+}
+
+.badge-koneksi {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(41, 128, 185, 0.15));
+    color: #2980b9;
+    border-color: rgba(52, 152, 219, 0.3);
+}
+
+.badge-riim {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(192, 57, 43, 0.15));
+    color: #c0392b;
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+.badge-puta {
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.15), rgba(142, 68, 173, 0.15));
+    color: #8e44ad;
+    border-color: rgba(155, 89, 182, 0.3);
+}
+
+.badge-pkgr {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(39, 174, 96, 0.15));
+    color: #27ae60;
+    border-color: rgba(46, 204, 113, 0.3);
+}
+
+.badge-hf {
+    background: linear-gradient(135deg, rgba(241, 196, 15, 0.15), rgba(243, 156, 18, 0.15));
+    color: #f39c12;
+    border-color: rgba(241, 196, 15, 0.3);
+}
+
+.badge-pkm {
+    background: linear-gradient(135deg, rgba(52, 73, 94, 0.15), rgba(44, 62, 80, 0.15));
+    color: #2c3e50;
+    border-color: rgba(52, 73, 94, 0.3);
+}
+
+.badge-itop {
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.15), rgba(211, 84, 0, 0.15));
+    color: #d35400;
+    border-color: rgba(230, 126, 34, 0.3);
+}
+
+.badge-pf {
+    background: linear-gradient(135deg, rgba(26, 188, 156, 0.15), rgba(22, 160, 133, 0.15));
+    color: #16a085;
+    border-color: rgba(26, 188, 156, 0.3);
+}
+
+.badge-pln {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(192, 57, 43, 0.15));
+    color: #c0392b;
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+.badge-put {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(41, 128, 185, 0.15));
+    color: #2980b9;
+    border-color: rgba(52, 152, 219, 0.3);
+}
+
+.badge-ptm {
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.15), rgba(142, 68, 173, 0.15));
+    color: #8e44ad;
+    border-color: rgba(155, 89, 182, 0.3);
+}
+
+.badge-hgr {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(39, 174, 96, 0.15));
+    color: #27ae60;
+    border-color: rgba(46, 204, 113, 0.3);
+}
+
+.badge-innovation {
+    background: linear-gradient(135deg, rgba(241, 196, 15, 0.15), rgba(243, 156, 18, 0.15));
+    color: #f39c12;
+    border-color: rgba(241, 196, 15, 0.3);
+}
+
+.badge-startup {
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.15), rgba(211, 84, 0, 0.15));
+    color: #d35400;
+    border-color: rgba(230, 126, 34, 0.3);
+}
+
+.badge-ppi {
+    background: linear-gradient(135deg, rgba(26, 188, 156, 0.15), rgba(22, 160, 133, 0.15));
+    color: #16a085;
+    border-color: rgba(26, 188, 156, 0.3);
+}
+
+.year {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray);
+    padding: 6px 12px;
+    background: rgba(149, 165, 166, 0.1);
+    border-radius: 15px;
+}
+
+.research-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: var(--dark);
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.research-card p {
+    color: var(--gray);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.research-card .research-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.research-card .research-tags span {
+    background: rgba(30, 91, 168, 0.08);
+    color: var(--primary);
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid rgba(30, 91, 168, 0.15);
+    transition: var(--transition);
+}
+
+.research-card:hover .research-tags span {
+    background: rgba(30, 91, 168, 0.18);
+    border-color: var(--primary);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 5px 15px rgba(30, 91, 168, 0.25);
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .research-grid {
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .recent-research {
+        padding: 120px 0 80px;
+    }
+    
+    .recent-research .section-title {
+        font-size: 2.2rem;
+    }
+    
+    .recent-research .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    .research-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .research-card {
+        padding: 25px;
+    }
+    
+    .research-card h3 {
+        font-size: 1.2rem;
+    }
+    
+    .research-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .recent-research .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .research-card {
+        padding: 20px;
+    }
+    
+    .research-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 5px 12px;
+    }
+    
+    .year {
+        font-size: 0.85rem;
+    }
+    
+    .research-card .research-tags span {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+}
+

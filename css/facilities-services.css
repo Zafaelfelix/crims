@@ -1,0 +1,288 @@
+/* Facilities & Services Page Styles */
+
+.facilities-hero {
+    padding: 150px 0 100px;
+    background: linear-gradient(135deg, rgba(30, 91, 168, 0.95), rgba(52, 152, 219, 0.9)), url('../assets/facilities.jpg') center/cover;
+    color: var(--white);
+    position: relative;
+}
+
+.facilities-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(to top, #f8f9fa, transparent);
+}
+
+.facilities-hero .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+}
+
+.facilities-hero .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 15px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.facilities-hero h1 {
+    font-size: 3rem;
+    color: var(--white);
+    margin-bottom: 20px;
+}
+
+.facilities-hero p {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+.facilities,
+.services {
+    padding: 100px 0;
+    background-color: #f8f9fa;
+}
+
+.services {
+    background-color: var(--white);
+}
+
+.section-header {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+}
+
+.section-subtitle {
+    font-size: 1rem;
+    color: #555;
+    max-width: 720px;
+    margin-top: 10px;
+    line-height: 1.8;
+}
+
+.software-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+.software-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    text-align: left;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(30, 91, 168, 0.1);
+}
+
+.software-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(30, 91, 168, 0.1), transparent);
+    opacity: 0;
+    transition: all 0.6s ease;
+    transform: scale(0);
+}
+
+.software-card:hover::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.software-card i {
+    font-size: 2.5rem;
+    color: var(--secondary);
+    margin-bottom: 20px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+}
+
+.software-card:hover i {
+    transform: scale(1.3) rotate(15deg);
+    color: var(--primary);
+    text-shadow: 0 0 25px rgba(30, 91, 168, 0.5);
+    filter: drop-shadow(0 5px 15px rgba(30, 91, 168, 0.3));
+}
+
+.software-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: var(--dark);
+}
+
+.software-card p {
+    color: var(--gray);
+    line-height: 1.7;
+}
+
+.software-card:hover {
+    transform: translateY(-12px) scale(1.03) rotate(1deg);
+    box-shadow: 0 25px 55px rgba(30, 91, 168, 0.25), 0 0 30px rgba(52, 152, 219, 0.2);
+    border-color: var(--primary);
+    border-width: 2px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.service-card {
+    background: #fdfefe;
+    border-radius: 18px;
+    padding: 35px 30px;
+    border: 1px solid rgba(30, 91, 168, 0.08);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.service-card:hover::after {
+    transform: scaleX(1);
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 20px;
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.5s ease;
+    filter: blur(12px);
+}
+
+.service-card:hover::before {
+    opacity: 0.5;
+    filter: blur(18px);
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70px;
+    height: 70px;
+    background: rgba(30, 91, 168, 0.08);
+    border-bottom-left-radius: 100%;
+}
+
+.service-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 25px 55px rgba(30, 91, 168, 0.3), 0 0 40px rgba(231, 76, 60, 0.2);
+    border-color: var(--primary);
+    border-width: 2px;
+}
+
+.service-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: rgba(30, 91, 168, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: var(--primary);
+    font-size: 1.5rem;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.service-icon::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    opacity: 0;
+    transition: all 0.5s ease;
+    z-index: -1;
+}
+
+.service-card:hover .service-icon::before {
+    opacity: 0.2;
+    transform: scale(1.2);
+}
+
+.service-card:hover .service-icon {
+    transform: scale(1.15) rotate(10deg);
+    background: rgba(30, 91, 168, 0.15);
+    box-shadow: 0 10px 30px rgba(30, 91, 168, 0.3);
+}
+
+.service-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: var(--dark);
+}
+
+.service-card p {
+    color: var(--gray);
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .facilities-hero {
+        padding: 130px 0 80px;
+    }
+
+    .facilities-hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .software-grid,
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .facilities-hero h1 {
+        font-size: 1.9rem;
+    }
+
+    .software-card,
+    .service-card {
+        padding: 25px;
+    }
+}
+
