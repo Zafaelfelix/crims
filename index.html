@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRIMS - Center for Research in Manufacturing System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header & Navigasi -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <h1>CRiMS</h1>
+                    <span>Center for Research in Manufacturing System</span>
+                </div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#beranda" class="active">Beranda</a></li>
+                    <li class="dropdown">
+                        <a href="#tentang">Tentang <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="research-fields.html">Research Fields</a></li>
+                            <li><a href="recent-research.html">Recent Research Activities</a></li>
+                            <li><a href="facilities-services.html">Facilities and Services</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#proyek">Proyek <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#research-topics">Availability Research Topics for Postgrad student</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#berita">Berita</a></li>
+                    <li class="dropdown">
+                        <a href="#mitra">Mitra <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="collaboration.html">Collaboration</a></li>
+                            <li><a href="team.html">Team</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#prestasi">Prestasi</a></li>
+                    <li><a href="#hilirisasi">Hilirisasi</a></li>
+                    <li class="login-btn"><a href="/login" class="btn btn-login">Dashboard</a></li>
+                </ul>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    
+
+    <!-- Hero Section -->
+    <section class="hero" id="beranda">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Mengembangkan Inovasi di Bidang Manufaktur</h1>
+                <p>Berfokus pada penelitian dan pengembangan sistem manufaktur berkelanjutan dan cerdas untuk masa depan yang lebih baik</p>
+                <div class="hero-buttons">
+                    <a href="#proyek" class="btn btn-primary">Lihat Proyek Kami</a>
+                    <a href="#tentang" class="btn btn-outline">Tentang Kami</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tentang Kami Section -->
+    <section class="about" id="tentang">
+        <div class="container">
+            <h2 class="section-title">Tentang Kami</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Center for Research in Manufacturing System (CRiMS) merupakan pusat penelitian yang berfokus pada pengembangan sistem manufaktur terpadu dan berkelanjutan. Kami berkomitmen untuk memberikan solusi inovatif dalam bidang manufaktur melalui penelitian berkualitas tinggi dan kolaborasi dengan industri.</p>
+                    <div class="about-features">
+                        <div class="feature">
+                            <i class="fas fa-flask"></i>
+                            <h3>Penelitian Unggulan</h3>
+                            <p>Mengembangkan teknologi mutakhir di bidang manufaktur</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-handshake"></i>
+                            <h3>Kolaborasi</h3>
+                            <p>Bekerja sama dengan industri dan akademisi</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h3>Pengembangan SDM</h3>
+                            <p>Mencetak peneliti dan praktisi handal</p>
+                        </div>
+                    </div>
+                    <a href="/tentang" class="btn btn-primary">Selengkapnya</a>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Tentang CRiMS">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Proyek Unggulan -->
+    <section class="featured-projects" id="proyek">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Proyek Unggulan</h2>
+                <a href="/proyek" class="btn-link">Lihat Semua Proyek <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Proyek 1">
+                    </div>
+                    <div class="project-content">
+                        <span class="project-category">Riset</span>
+                        <h3>Pengembangan Robot Teleoperasi Dua Lengan</h3>
+                        <p>Mengembangkan sistem robotik untuk inspeksi di area berbahaya berbasis interaksi manusia-mesin.</p>
+                        <a href="/proyek/robot-teleoperasi" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1581092921461-39b2f2f8a4d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Proyek 2">
+                    </div>
+                    <div class="project-content">
+                        <span class="project-category">Inovasi</span>
+                        <h3>Smart Wearable Device untuk Atlet</h3>
+                        <p>Perangkat wearable berbasis biosignal untuk memonitor dan meningkatkan performa atlet.</p>
+                        <a href="/proyek/smart-wearable" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Proyek 3">
+                    </div>
+                    <div class="project-content">
+                        <span class="project-category">Energi</span>
+                        <h3>Konversi Kompor LPG ke Induksi</h3>
+                        <p>Implementasi teknologi induksi sebagai alternatif energi bersih untuk rumah tangga.</p>
+                        <a href="/proyek/konversi-kompor" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Berita Terbaru -->
+    <section class="latest-news" id="berita">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Berita Terbaru</h2>
+                <a href="/berita" class="btn-link">Lihat Semua Berita <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="news-grid">
+                <div class="news-card">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Berita 1">
+                        <span class="news-date">24 Nov 2025</span>
+                    </div>
+                    <div class="news-content">
+                        <h3>CRiMS Raih Penghargaan Inovasi Teknologi 2025</h3>
+                        <p>Penghargaan diberikan atas kontribusi dalam pengembangan teknologi manufaktur berkelanjutan.</p>
+                        <a href="/berita/penghargaan-2025" class="btn-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Berita 2">
+                        <span class="news-date">15 Nov 2025</span>
+                    </div>
+                    <div class="news-content">
+                        <h3>Kolaborasi dengan Industri Otomotif Nasional</h3>
+                        <p>Kerja sama penelitian untuk mengembangkan komponen kendaraan yang lebih efisien.</p>
+                        <a href="/berita/kolaborasi-otomotif" class="btn-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Berita 3">
+                        <span class="news-date">5 Nov 2025</span>
+                    </div>
+                    <div class="news-content">
+                        <h3>Pelatihan Teknologi Manufaktur 4.0 untuk UMKM</h3>
+                        <p>Program peningkatan kapasitas bagi pelaku UMKM dalam menghadapi era industri 4.0.</p>
+                        <a href="/berita/pelatihan-umkm" class="btn-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mitra -->
+    <section class="partners" id="mitra">
+        <div class="container">
+            <h2 class="section-title">Mitra Kami</h2>
+            <div class="partners-slider-wrapper">
+                <div class="partners-slider">
+                    <!-- Set 1 -->
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/malaya.jpg" alt="Universitas Malaya">
+                        </div>
+                        <h4>Universitas Malaya</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/gifu.png" alt="Gifu University">
+                        </div>
+                        <h4>Gifu University</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/canbera.png" alt="Canberra University">
+                        </div>
+                        <h4>Canberra University</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/malaysia pahang.png" alt="Universitas Malaysia Pahang">
+                        </div>
+                        <h4>Universitas Malaysia Pahang</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/utem.png" alt="Universiti Teknikal Melaka">
+                        </div>
+                        <h4>Universiti Teknikal Melaka</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/pln.png" alt="PT PLN">
+                        </div>
+                        <h4>PT PLN</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/pertamina.png" alt="PT Pertamina">
+                        </div>
+                        <h4>PT Pertamina</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/mak.png" alt="PT Mega Andalan Kalasan">
+                        </div>
+                        <h4>PT Mega Andalan Kalasan</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/pan brothers.png" alt="PT Pan Brothers">
+                        </div>
+                        <h4>PT Pan Brothers</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/iskandar.png" alt="PT Iskandar Tex">
+                        </div>
+                        <h4>PT Iskandar Tex</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/nihon seiki.jpg" alt="PT Nihon Seiki">
+                        </div>
+                        <h4>PT Nihon Seiki</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/toyota.png" alt="PT Toyota">
+                        </div>
+                        <h4>PT Toyota</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/enuma.jpeg" alt="CV Enuma Technology">
+                        </div>
+                        <h4>CV Enuma Technology</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/shamiq.png" alt="CV Shiamiq">
+                        </div>
+                        <h4>CV Shiamiq</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/Ud mella.png" alt="UD Mella Kreasi">
+                        </div>
+                        <h4>UD Mella Kreasi</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/UD MUDA.png" alt="UD Muda Tama">
+                        </div>
+                        <h4>UD Muda Tama</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/proof.png" alt="Industri Genteng">
+                        </div>
+                        <h4>Industri Genteng (P2M)</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/smkn2.png" alt="SMK &amp; SMA Solo Raya">
+                        </div>
+                        <h4>SMK &amp; SMA Solo Raya</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/RS Uns.png" alt="RS UNS">
+                        </div>
+                        <h4>RS UNS</h4>
+                    </div>
+                    <!-- Set 2 (duplicate for smooth scroll) -->
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/malaya.jpg" alt="Universitas Malaya">
+                        </div>
+                        <h4>Universitas Malaya</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/gifu.png" alt="Gifu University">
+                        </div>
+                        <h4>Gifu University</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/canbera.png" alt="Canberra University">
+                        </div>
+                        <h4>Canberra University</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/malaysia pahang.png" alt="Universitas Malaysia Pahang">
+                        </div>
+                        <h4>Universitas Malaysia Pahang</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/utem.png" alt="Universiti Teknikal Melaka">
+                        </div>
+                        <h4>Universiti Teknikal Melaka</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/pln.png" alt="PT PLN">
+                        </div>
+                        <h4>PT PLN</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/pertamina.png" alt="PT Pertamina">
+                        </div>
+                        <h4>PT Pertamina</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/mak.png" alt="PT Mega Andalan Kalasan">
+                        </div>
+                        <h4>PT Mega Andalan Kalasan</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/pan brothers.png" alt="PT Pan Brothers">
+                        </div>
+                        <h4>PT Pan Brothers</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/iskandar.png" alt="PT Iskandar Tex">
+                        </div>
+                        <h4>PT Iskandar Tex</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/nihon seiki.jpg" alt="PT Nihon Seiki">
+                        </div>
+                        <h4>PT Nihon Seiki</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/toyota.png" alt="PT Toyota">
+                        </div>
+                        <h4>PT Toyota</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/enuma.jpeg" alt="CV Enuma Technology">
+                        </div>
+                        <h4>CV Enuma Technology</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/shamiq.png" alt="CV Shiamiq">
+                        </div>
+                        <h4>CV Shiamiq</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/Ud mella.png" alt="UD Mella Kreasi">
+                        </div>
+                        <h4>UD Mella Kreasi</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/UD MUDA.png" alt="UD Muda Tama">
+                        </div>
+                        <h4>UD Muda Tama</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/proof.png" alt="Industri Genteng">
+                        </div>
+                        <h4>Industri Genteng (P2M)</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/smkn2.png" alt="SMK &amp; SMA Solo Raya">
+                        </div>
+                        <h4>SMK &amp; SMA Solo Raya</h4>
+                    </div>
+                    <div class="partner-logo">
+                        <div class="partner-logo-image">
+                            <img src="assets/RS Uns.png" alt="RS UNS">
+                        </div>
+                        <h4>RS UNS</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prestasi -->
+    <section class="achievements" id="prestasi">
+        <div class="container">
+            <h2 class="section-title">Prestasi</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>Juara 1 Inovasi Teknologi 2025</h3>
+                    <p>Penghargaan untuk inovasi di bidang manufaktur berkelanjutan</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h3>Best Paper Award 2024</h3>
+                    <p>Penghargaan untuk makalah penelitian terbaik di konferensi internasional</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3>Hak Paten Inovasi</h3>
+                    <p>Mendapatkan hak paten untuk teknologi manufaktur inovatif</p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="/prestasi" class="btn btn-primary">Lihat Semua Prestasi</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hilirisasi -->
+    <section class="commercialization" id="hilirisasi">
+        <div class="container">
+            <h2 class="section-title">Hilirisasi</h2>
+            <div class="commercialization-grid">
+                <div class="commercialization-card">
+                    <div class="commercialization-image">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Hilirisasi 1">
+                    </div>
+                    <div class="commercialization-content">
+                        <h3>Teknologi Robot Industri</h3>
+                        <p>Solusi otomasi untuk meningkatkan efisiensi produksi di industri manufaktur</p>
+                        <a href="/hilirisasi/robot-industri" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="commercialization-card">
+                    <div class="commercialization-image">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Hilirisasi 2">
+                    </div>
+                    <div class="commercialization-content">
+                        <h3>Sistem Manajemen Kualitas</h3>
+                        <p>Platform digital untuk memantau dan meningkatkan kualitas produk</p>
+                        <a href="/hilirisasi/sistem-kualitas" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <h2>CRiMS</h2>
+                        <p>Center for Research in Manufacturing System</p>
+                    </div>
+                    <p>Mengembangkan inovasi di bidang manufaktur untuk masa depan yang lebih baik</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Tautan Cepat</h3>
+                    <ul>
+                        <li><a href="#beranda">Beranda</a></li>
+                        <li><a href="#tentang">Tentang Kami</a></li>
+                        <li><a href="research-fields.html">Research Fields</a></li>
+                        <li><a href="recent-research.html">Recent Research Activities</a></li>
+                        <li><a href="facilities-services.html">Facilities & Services</a></li>
+                        <li><a href="collaboration.html">Collaboration</a></li>
+                        <li><a href="team.html">Team</a></li>
+                        <li><a href="#proyek">Proyek</a></li>
+                        <li><a href="#berita">Berita</a></li>
+                        <li><a href="#mitra">Mitra</a></li>
+                        <li><a href="#prestasi">Prestasi</a></li>
+                        <li><a href="#hilirisasi">Hilirisasi</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontak Kami</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Jl. Ir. Sutami 36A, Surakarta, Indonesia</p>
+                    <p><i class="fas fa-phone"></i> +62 271 1234567</p>
+                    <p><i class="fas fa-envelope"></i> info@crims.uns.ac.id</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 CRiMS - Center for Research in Manufacturing System. Semua Hak Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
