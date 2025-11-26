@@ -197,6 +197,87 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Scroll animations are now handled by initScrollAnimations() function above
     
+    // ========== Projects Slider ==========
+    const projectsSlider = document.getElementById('projectsSlider');
+    const projectsSliderPrev = document.getElementById('projectsSliderPrev');
+    const projectsSliderNext = document.getElementById('projectsSliderNext');
+    
+    if (projectsSlider && projectsSliderPrev && projectsSliderNext) {
+        const projectCards = projectsSlider.querySelectorAll('.project-card');
+        let currentIndex = 0;
+        const totalProjects = projectCards.length;
+        
+        // Set first card as active on load
+        if (projectCards.length > 0) {
+            projectCards[0].classList.add('active');
+        }
+        
+        function updateSlider() {
+            // Remove active class from all cards
+            projectCards.forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add fade out animation to current card
+            if (projectCards[currentIndex]) {
+                projectCards[currentIndex].style.opacity = '0';
+                projectCards[currentIndex].style.transform = 'scale(0.95) translateY(20px)';
+            }
+            
+            // Update slider position
+            const translateX = -currentIndex * 100;
+            projectsSlider.style.transform = `translateX(${translateX}%)`;
+            
+            // Add active class and fade in animation to new card
+            setTimeout(() => {
+                if (projectCards[currentIndex]) {
+                    projectCards[currentIndex].classList.add('active');
+                    projectCards[currentIndex].style.opacity = '1';
+                    projectCards[currentIndex].style.transform = 'scale(1) translateY(0)';
+                }
+            }, 50);
+            
+            // Disable/enable prev button
+            if (currentIndex <= 0) {
+                projectsSliderPrev.style.opacity = '0.4';
+                projectsSliderPrev.style.cursor = 'not-allowed';
+                projectsSliderPrev.disabled = true;
+            } else {
+                projectsSliderPrev.style.opacity = '0.9';
+                projectsSliderPrev.style.cursor = 'pointer';
+                projectsSliderPrev.disabled = false;
+            }
+            
+            // Disable/enable next button
+            if (currentIndex >= totalProjects - 1) {
+                projectsSliderNext.style.opacity = '0.4';
+                projectsSliderNext.style.cursor = 'not-allowed';
+                projectsSliderNext.disabled = true;
+            } else {
+                projectsSliderNext.style.opacity = '0.9';
+                projectsSliderNext.style.cursor = 'pointer';
+                projectsSliderNext.disabled = false;
+            }
+        }
+        
+        projectsSliderPrev.addEventListener('click', function() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSlider();
+            }
+        });
+        
+        projectsSliderNext.addEventListener('click', function() {
+            if (currentIndex < totalProjects - 1) {
+                currentIndex++;
+                updateSlider();
+            }
+        });
+        
+        // Initialize slider
+        updateSlider();
+    }
+    
     // ========== Partners Slider Auto Scroll ==========
     // Disabled cloning to prevent duplication - slider will scroll normally without infinite loop
     // If you want smooth infinite scroll later, uncomment and adjust the code below

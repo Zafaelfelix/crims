@@ -38,6 +38,54 @@ if ($achievementQuery) {
     $achievementQuery->free();
 }
 
+// Get About Us content from database
+$aboutOverview = null;
+$aboutFeatures = [];
+$aboutImage = 'https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80';
+$aboutButtonText = 'Selengkapnya';
+$aboutButtonUrl = '/tentang.html';
+
+$stmt = $mysqli->prepare('SELECT content, extra FROM cms_sections WHERE slug = ?');
+$slug = 'about_overview';
+$stmt->bind_param('s', $slug);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($row = $result->fetch_assoc()) {
+    $aboutOverview = $row['content'];
+    if ($row['extra']) {
+        $extra = json_decode($row['extra'], true);
+        if ($extra) {
+            $aboutImage = !empty($extra['image_url']) ? $extra['image_url'] : $aboutImage;
+            $aboutButtonText = !empty($extra['button_text']) ? $extra['button_text'] : $aboutButtonText;
+            $aboutButtonUrl = !empty($extra['button_url']) ? $extra['button_url'] : $aboutButtonUrl;
+        }
+    }
+}
+$stmt->close();
+
+$stmt = $mysqli->prepare('SELECT content FROM cms_sections WHERE slug = ?');
+$slug = 'about_features';
+$stmt->bind_param('s', $slug);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($row = $result->fetch_assoc() && $row['content']) {
+    $aboutFeatures = json_decode($row['content'], true) ?: [];
+}
+$stmt->close();
+
+// Default values if no data in database
+if (!$aboutOverview) {
+    $aboutOverview = 'Center for Research in Manufacturing System (CRiMS) merupakan pusat penelitian yang berfokus pada pengembangan sistem manufaktur terpadu dan berkelanjutan. Kami berkomitmen untuk memberikan solusi inovatif dalam bidang manufaktur melalui penelitian berkualitas tinggi dan kolaborasi dengan industri.';
+}
+
+if (empty($aboutFeatures)) {
+    $aboutFeatures = [
+        ['icon' => 'fas fa-flask', 'title' => 'Penelitian Unggulan', 'description' => 'Mengembangkan teknologi mutakhir di bidang manufaktur'],
+        ['icon' => 'fas fa-handshake', 'title' => 'Kolaborasi', 'description' => 'Bekerja sama dengan industri dan akademisi'],
+        ['icon' => 'fas fa-graduation-cap', 'title' => 'Pengembangan SDM', 'description' => 'Mencetak peneliti dan praktisi handal']
+    ];
+}
+
 function achievementImageSrc(?string $path): string {
     if ($path) {
         return '/crims/' . ltrim($path, '/');
@@ -163,28 +211,30 @@ function newsImageSrc(?string $path): string {
             <h2 class="section-title">Tentang Kami</h2>
             <div class="about-content">
                 <div class="about-text">
-                    <p>Center for Research in Manufacturing System (CRiMS) merupakan pusat penelitian yang berfokus pada pengembangan sistem manufaktur terpadu dan berkelanjutan. Kami berkomitmen untuk memberikan solusi inovatif dalam bidang manufaktur melalui penelitian berkualitas tinggi dan kolaborasi dengan industri.</p>
+                    <p><?= htmlspecialchars($aboutOverview) ?></p>
                     <div class="about-features">
+                        <?php foreach ($aboutFeatures as $feature): ?>
+                        <?php if (!empty($feature['icon']) && !empty($feature['title']) && !empty($feature['description'])): ?>
                         <div class="feature">
-                            <i class="fas fa-flask"></i>
-                            <h3>Penelitian Unggulan</h3>
-                            <p>Mengembangkan teknologi mutakhir di bidang manufaktur</p>
+                            <i class="<?= htmlspecialchars($feature['icon']) ?>"></i>
+                            <h3><?= htmlspecialchars($feature['title']) ?></h3>
+                            <p><?= htmlspecialchars($feature['description']) ?></p>
                         </div>
-                        <div class="feature">
-                            <i class="fas fa-handshake"></i>
-                            <h3>Kolaborasi</h3>
-                            <p>Bekerja sama dengan industri dan akademisi</p>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-graduation-cap"></i>
-                            <h3>Pengembangan SDM</h3>
-                            <p>Mencetak peneliti dan praktisi handal</p>
-                        </div>
+                        <?php endif; ?>
+                        <?php endforeach; ?>
                     </div>
-                    <a href="/tentang.html" class="btn btn-primary">Selengkapnya</a>
+                    <a href="<?= htmlspecialchars($aboutButtonUrl) ?>" class="btn btn-primary"><?= htmlspecialchars($aboutButtonText) ?></a>
                 </div>
                 <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Tentang CRiMS">
+                    <?php 
+                    $imageSrc = $aboutImage;
+                    if (!empty($aboutImage) && strpos($aboutImage, 'http') !== 0 && strpos($aboutImage, '/') !== 0) {
+                        $imageSrc = '/crims/' . ltrim($aboutImage, '/');
+                    } elseif (!empty($aboutImage) && strpos($aboutImage, '/') === 0 && strpos($aboutImage, '/crims/') !== 0) {
+                        $imageSrc = '/crims' . $aboutImage;
+                    }
+                    ?>
+                    <img src="<?= htmlspecialchars($imageSrc) ?>" alt="Tentang CRiMS">
                 </div>
             </div>
         </div>
@@ -198,13 +248,14 @@ function newsImageSrc(?string $path): string {
                 <h2 class="section-title">Proyek Unggulan</h2>
                 <a href="/proyek.html" class="btn-link">Lihat Semua Proyek <i class="fas fa-arrow-right"></i></a>
             </div>
-            <div class="projects-grid">
-                <?php foreach ($projectItems as $project): ?>
-                <div class="project-card">
-                    <div class="project-image">
+            <div class="projects-slider-wrapper">
+                <div class="projects-slider" id="projectsSlider">
+                    <?php foreach ($projectItems as $project): ?>
+                    <div class="project-card">
+                        <div class="project-image">
                             <img src="<?= htmlspecialchars(projectImageSrc($project['image_url'])) ?>" alt="<?= htmlspecialchars($project['title']) ?>">
-                    </div>
-                    <div class="project-content">
+                        </div>
+                        <div class="project-content">
                             <?php if (!empty($project['category'])): ?>
                                 <span class="project-category"><?= htmlspecialchars($project['category']) ?></span>
                             <?php endif; ?>
@@ -217,9 +268,16 @@ function newsImageSrc(?string $path): string {
                             <?php else: ?>
                                 <a href="#" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
                             <?php endif; ?>
-                </div>
+                        </div>
                     </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
+                <button class="projects-slider-btn projects-slider-prev" id="projectsSliderPrev" aria-label="Previous project">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="projects-slider-btn projects-slider-next" id="projectsSliderNext" aria-label="Next project">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
         </div>
     </section>

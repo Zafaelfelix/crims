@@ -48,6 +48,54 @@ function uploadNewsImage(string $fieldName, string $targetDir): ?string
     return 'uploads/news/' . $fileName;
 }
 
+function uploadNewsPhotos(array $files, string $targetDir, int $newsId): array
+{
+    $uploadedPhotos = [];
+    
+    // Handle both single file and multiple files
+    if (empty($files['name'])) {
+        return $uploadedPhotos;
+    }
+    
+    // Convert single file to array format if needed
+    if (!is_array($files['name'])) {
+        $files = [
+            'name' => [$files['name']],
+            'type' => [$files['type']],
+            'tmp_name' => [$files['tmp_name']],
+            'error' => [$files['error']],
+            'size' => [$files['size']]
+        ];
+    }
+
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    
+    for ($i = 0; $i < count($files['name']); $i++) {
+        if (empty($files['name'][$i]) || $files['error'][$i] !== UPLOAD_ERR_OK) {
+            continue;
+        }
+
+        $fileType = $files['type'][$i] ?? '';
+        if (!in_array($fileType, $allowedTypes, true)) {
+            continue;
+        }
+
+        $extension = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+        if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
+            continue;
+        }
+
+        $fileName = uniqid('news_photo_', true) . '.' . $extension;
+        $targetPath = rtrim($targetDir, '/') . '/' . $fileName;
+
+        if (move_uploaded_file($files['tmp_name'][$i], $targetPath)) {
+            $uploadedPhotos[] = 'uploads/news/' . $fileName;
+        }
+    }
+
+    return $uploadedPhotos;
+}
+
 function removeNewsImage(?string $relativePath): void
 {
     if (!$relativePath) {
@@ -66,7 +114,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int) ($_POST['id'] ?? 0);
 
     try {
-        if ($action === 'delete') {
+        if ($action === 'delete_photo') {
+            // Check if table exists first
+            $tableCheck = $mysqli->query("SHOW TABLES LIKE 'news_photos'");
+            if ($tableCheck && $tableCheck->num_rows > 0) {
+                $tableCheck->free();
+                $photoId = (int) ($_POST['photo_id'] ?? 0);
+                if ($photoId > 0) {
+                    $stmt = $mysqli->prepare('SELECT photo_url FROM news_photos WHERE id = ?');
+                    if ($stmt) {
+                        $stmt->bind_param('i', $photoId);
+                        $stmt->execute();
+                        $row = $stmt->get_result()->fetch_assoc();
+                        $stmt->close();
+
+                        if ($row && $row['photo_url']) {
+                            removeNewsImage($row['photo_url']);
+                        }
+
+                        $stmt = $mysqli->prepare('DELETE FROM news_photos WHERE id = ?');
+                        if ($stmt) {
+                            $stmt->bind_param('i', $photoId);
+                            $stmt->execute();
+                            $stmt->close();
+                        }
+                    }
+                }
+                $_SESSION['flash_success'] = 'Foto berhasil dihapus.';
+            } else {
+                if ($tableCheck) $tableCheck->free();
+                $_SESSION['flash_error'] = 'Tabel news_photos belum dibuat. Silakan import file SQL terlebih dahulu.';
+            }
+            header('Location: /crims/admin/news.php?edit=' . $id);
+            exit;
+        } elseif ($action === 'delete') {
             if ($id > 0) {
                 $stmt = $mysqli->prepare('SELECT image_url FROM news_items WHERE id = ?');
                 $stmt->bind_param('i', $id);
@@ -85,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $_SESSION['flash_success'] = 'Berita berhasil dihapus.';
         } else {
+            // Default action is 'save'
             $title = trim($_POST['title'] ?? '');
             $summary = trim($_POST['summary'] ?? '');
             $articleUrl = trim($_POST['article_url'] ?? '');
@@ -108,27 +190,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $publishedDate = $publishedAt ? $publishedAt : null;
 
             if ($id > 0) {
+                // Update existing news
                 $stmt = $mysqli->prepare('UPDATE news_items SET title = ?, summary = ?, image_url = ?, article_url = ?, published_at = ?, sort_order = ? WHERE id = ?');
+                if (!$stmt) {
+                    throw new RuntimeException('Gagal menyiapkan query update: ' . $mysqli->error);
+                }
                 $stmt->bind_param('sssssii', $title, $summary, $imagePath, $articleUrl, $publishedDate, $sortOrder, $id);
-                $stmt->execute();
+                if (!$stmt->execute()) {
+                    throw new RuntimeException('Gagal memperbarui berita: ' . $stmt->error);
+                }
+                $newsId = $id;
                 $stmt->close();
                 $_SESSION['flash_success'] = 'Berita berhasil diperbarui.';
             } else {
+                // Insert new news
                 $stmt = $mysqli->prepare('INSERT INTO news_items (title, summary, image_url, article_url, published_at, sort_order) VALUES (?, ?, ?, ?, ?, ?)');
+                if (!$stmt) {
+                    throw new RuntimeException('Gagal menyiapkan query insert: ' . $mysqli->error);
+                }
                 $stmt->bind_param('sssssi', $title, $summary, $imagePath, $articleUrl, $publishedDate, $sortOrder);
-                $stmt->execute();
+                if (!$stmt->execute()) {
+                    throw new RuntimeException('Gagal menambahkan berita: ' . $stmt->error);
+                }
+                $newsId = $mysqli->insert_id;
                 $stmt->close();
                 $_SESSION['flash_success'] = 'Berita baru berhasil ditambahkan.';
+            }
+
+            // Handle multiple photos upload
+            if (isset($_FILES['photos']) && !empty($_FILES['photos']['name']) && $newsId > 0) {
+                // Check if table exists first
+                $tableCheck = $mysqli->query("SHOW TABLES LIKE 'news_photos'");
+                if ($tableCheck && $tableCheck->num_rows > 0) {
+                    $tableCheck->free();
+                    $uploadedPhotos = uploadNewsPhotos($_FILES['photos'], $uploadDir, $newsId);
+                    if (!empty($uploadedPhotos)) {
+                        $stmt = $mysqli->prepare('INSERT INTO news_photos (news_id, photo_url, sort_order) VALUES (?, ?, ?)');
+                        if ($stmt) {
+                            foreach ($uploadedPhotos as $index => $photoUrl) {
+                                $sortOrder = $index;
+                                $stmt->bind_param('isi', $newsId, $photoUrl, $sortOrder);
+                                $stmt->execute();
+                            }
+                            $stmt->close();
+                        }
+                        $_SESSION['flash_success'] .= ' ' . count($uploadedPhotos) . ' foto berhasil diunggah.';
+                    }
+                } else {
+                    if ($tableCheck) $tableCheck->free();
+                }
             }
         }
     } catch (Throwable $e) {
         $_SESSION['flash_error'] = $e->getMessage();
         $_SESSION['form_data'] = $_POST;
+        error_log('News save error: ' . $e->getMessage());
     }
 
     $redirect = '/crims/admin/news.php';
     if ($action !== 'delete' && $id > 0 && empty($_SESSION['flash_error'])) {
         $redirect .= '?edit=' . $id;
+    } elseif ($action !== 'delete' && empty($_SESSION['flash_error']) && isset($newsId) && $newsId > 0) {
+        // If new item was created, redirect to edit page
+        $redirect .= '?edit=' . $newsId;
     }
     header('Location: ' . $redirect);
     exit;
@@ -142,12 +266,33 @@ if ($result) {
 }
 
 $editingNews = null;
+$newsPhotos = [];
 if (isset($_GET['edit'])) {
     $editId = (int) $_GET['edit'];
     foreach ($newsItems as $news) {
         if ((int) $news['id'] === $editId) {
             $editingNews = $news;
             break;
+        }
+    }
+    
+    // Get photos for this news
+    if ($editingNews) {
+        // Check if table exists first
+        $tableCheck = $mysqli->query("SHOW TABLES LIKE 'news_photos'");
+        if ($tableCheck && $tableCheck->num_rows > 0) {
+            $tableCheck->free();
+            $stmt = $mysqli->prepare('SELECT id, photo_url, caption, sort_order FROM news_photos WHERE news_id = ? ORDER BY sort_order ASC');
+            if ($stmt) {
+                $stmt->bind_param('i', $editId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $newsPhotos = $result->fetch_all(MYSQLI_ASSOC);
+                $stmt->close();
+            }
+        } else {
+            if ($tableCheck) $tableCheck->free();
+            $newsPhotos = [];
         }
     }
 }
@@ -207,7 +352,8 @@ ob_start();
 
         <div class="card">
             <h2><?= $editingNews ? 'Edit Berita' : 'Tambah Berita Baru' ?></h2>
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" id="newsForm">
+                <input type="hidden" name="action" value="save">
                 <input type="hidden" name="id" value="<?= $formData['id'] ?? 0 ?>">
                 <input type="hidden" name="existing_image" value="<?= htmlspecialchars($formData['image_url'] ?? '') ?>">
                 
@@ -237,6 +383,52 @@ ob_start();
                     </div>
                 </div>
 
+                <?php if ($editingNews && !empty($newsPhotos)): ?>
+                <div class="form-group">
+                    <label>Foto-foto Berita</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 12px;">
+                        <?php foreach ($newsPhotos as $photo): ?>
+                        <div style="position: relative; border-radius: 8px; overflow: hidden; border: 2px solid #e5eaf3;">
+                            <img src="/crims/<?= htmlspecialchars($photo['photo_url']) ?>" alt="Photo" style="width: 100%; height: 120px; object-fit: cover; display: block;">
+                            <button type="button" class="btn danger" style="padding: 6px 10px; font-size: 12px; border-radius: 6px; position: absolute; top: 4px; right: 4px;" onclick="deletePhoto(<?= $editingNews['id'] ?>, <?= $photo['id'] ?>)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <div class="form-group">
+                    <label for="photos">Tambah Foto Berita (Multiple)</label>
+                    <input type="file" id="photos" name="photos[]" accept="image/*" multiple style="padding: 8px;">
+                    <small style="color: #666; margin-top: 4px; display: block;">Pilih beberapa foto sekaligus. Foto akan ditampilkan di halaman detail berita.</small>
+                    <div id="photosPreview" style="margin-top: 12px; display: none;">
+                        <strong style="color: #1e5ba8;">File yang dipilih:</strong>
+                        <ul id="photosList" style="margin-top: 8px; padding-left: 20px; color: #666;"></ul>
+                    </div>
+                </div>
+
+                <script>
+                document.getElementById('photos').addEventListener('change', function(e) {
+                    const files = e.target.files;
+                    const preview = document.getElementById('photosPreview');
+                    const list = document.getElementById('photosList');
+                    
+                    if (files.length > 0) {
+                        list.innerHTML = '';
+                        for (let i = 0; i < files.length; i++) {
+                            const li = document.createElement('li');
+                            li.textContent = files[i].name + ' (' + (files[i].size / 1024).toFixed(2) + ' KB)';
+                            list.appendChild(li);
+                        }
+                        preview.style.display = 'block';
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                });
+                </script>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="published_at">Tanggal Publikasi</label>
@@ -249,12 +441,65 @@ ob_start();
                 </div>
 
                 <div style="display:flex;gap:12px">
-                    <button type="submit" class="btn"><?= $editingNews ? 'Simpan Perubahan' : 'Tambah Berita' ?></button>
+                    <button type="submit" class="btn" id="submitBtn"><?= $editingNews ? 'Simpan Perubahan' : 'Tambah Berita' ?></button>
                     <?php if ($editingNews): ?>
                         <a href="/crims/admin/news.php" class="btn secondary">Batal</a>
                     <?php endif; ?>
                 </div>
             </form>
+
+            <script>
+            // Form validation and submission feedback
+            document.getElementById('newsForm').addEventListener('submit', function(e) {
+                const title = document.getElementById('title').value.trim();
+                if (!title) {
+                    e.preventDefault();
+                    alert('Judul berita wajib diisi!');
+                    document.getElementById('title').focus();
+                    return false;
+                }
+                
+                const submitBtn = document.getElementById('submitBtn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Menyimpan...';
+                }
+                
+                return true;
+            });
+
+            // Delete photo function (outside form to avoid nested form issue)
+            function deletePhoto(newsId, photoId) {
+                if (!confirm('Hapus foto ini?')) {
+                    return;
+                }
+                
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '';
+                
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'delete_photo';
+                form.appendChild(actionInput);
+                
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'id';
+                idInput.value = newsId;
+                form.appendChild(idInput);
+                
+                const photoIdInput = document.createElement('input');
+                photoIdInput.type = 'hidden';
+                photoIdInput.name = 'photo_id';
+                photoIdInput.value = photoId;
+                form.appendChild(photoIdInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+            </script>
         </div>
 
         <div class="card">

@@ -15,6 +15,44 @@ $result = $query->get_result();
 $news = $result->fetch_assoc();
 $query->close();
 
+// Get photos for this news and combine with main image
+$allPhotos = [];
+// Add main image as first photo if exists
+if (!empty($news['image_url'])) {
+    $allPhotos[] = [
+        'photo_url' => $news['image_url'],
+        'caption' => $news['title'],
+        'is_main' => true
+    ];
+}
+
+// Get additional photos from gallery
+$newsPhotos = [];
+// Check if table exists first
+$tableCheck = $mysqli->query("SHOW TABLES LIKE 'news_photos'");
+if ($tableCheck && $tableCheck->num_rows > 0) {
+    $tableCheck->free();
+    $stmt = $mysqli->prepare('SELECT id, photo_url, caption, sort_order FROM news_photos WHERE news_id = ? ORDER BY sort_order ASC');
+    if ($stmt) {
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $newsPhotos = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+    }
+} else {
+    if ($tableCheck) $tableCheck->free();
+}
+
+// Combine all photos
+foreach ($newsPhotos as $photo) {
+    $allPhotos[] = [
+        'photo_url' => $photo['photo_url'],
+        'caption' => $photo['caption'] ?: $news['title'],
+        'is_main' => false
+    ];
+}
+
 if (!$news) {
     header('Location: /crims/');
     exit;
@@ -107,6 +145,10 @@ $pageTitle = htmlspecialchars($news['title']);
             object-fit: cover;
             max-height: 500px;
         }
+
+        .news-photo-slide .news-detail-image {
+            margin-bottom: 0;
+        }
         
         .news-detail-image::after {
             content: '\f00e';
@@ -131,6 +173,115 @@ $pageTitle = htmlspecialchars($news['title']);
         
         .news-detail-image:hover::after {
             opacity: 1;
+        }
+
+        /* News Photo Slider */
+        .news-photo-slider-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .news-photo-slider {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+
+        .news-photo-slide {
+            min-width: 100%;
+            flex-shrink: 0;
+            display: none;
+        }
+
+        .news-photo-slide.active {
+            display: block;
+        }
+
+        .news-slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1e5ba8;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 10;
+            opacity: 0.9;
+        }
+
+        .news-slider-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .news-slider-prev {
+            left: 20px;
+        }
+
+        .news-slider-next {
+            right: 20px;
+        }
+
+        .news-slider-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .news-slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .news-slider-dot.active {
+            background: #1e5ba8;
+            border-color: #1e5ba8;
+            transform: scale(1.2);
+        }
+
+        .news-slider-dot:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .news-slider-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .news-slider-prev {
+                left: 10px;
+            }
+
+            .news-slider-next {
+                right: 10px;
+            }
+
+            .news-slider-dots {
+                bottom: 10px;
+            }
         }
         
         .news-detail-body {
@@ -390,10 +541,31 @@ $pageTitle = htmlspecialchars($news['title']);
             </div>
             
             <div class="news-detail-card">
-                <?php if (!empty($news['image_url'])): ?>
-                    <div class="news-detail-image" onclick="openLightbox('<?= htmlspecialchars(newsImageSrc($news['image_url'])) ?>', '<?= htmlspecialchars($news['title']) ?>')">
-                        <img src="<?= htmlspecialchars(newsImageSrc($news['image_url'])) ?>" alt="<?= htmlspecialchars($news['title']) ?>" loading="lazy">
+                <?php if (!empty($allPhotos)): ?>
+                <div class="news-photo-slider-wrapper">
+                    <div class="news-photo-slider" id="newsPhotoSlider">
+                        <?php foreach ($allPhotos as $index => $photo): ?>
+                        <div class="news-photo-slide <?= $index === 0 ? 'active' : '' ?>">
+                            <div class="news-detail-image" onclick="openLightbox('<?= htmlspecialchars(newsImageSrc($photo['photo_url'])) ?>', '<?= htmlspecialchars($photo['caption']) ?>')">
+                                <img src="<?= htmlspecialchars(newsImageSrc($photo['photo_url'])) ?>" alt="<?= htmlspecialchars($photo['caption']) ?>" loading="lazy">
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
                     </div>
+                    <?php if (count($allPhotos) > 1): ?>
+                    <button class="news-slider-btn news-slider-prev" id="newsSliderPrev" aria-label="Previous photo">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="news-slider-btn news-slider-next" id="newsSliderNext" aria-label="Next photo">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <div class="news-slider-dots">
+                        <?php foreach ($allPhotos as $index => $photo): ?>
+                        <span class="news-slider-dot <?= $index === 0 ? 'active' : '' ?>" data-slide="<?= $index ?>"></span>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+                </div>
                 <?php endif; ?>
                 
                 <div class="news-detail-body">
@@ -456,6 +628,83 @@ $pageTitle = htmlspecialchars($news['title']);
     
     <script src="js/script.js"></script>
     <script>
+        // News Photo Slider
+        <?php if (!empty($allPhotos) && count($allPhotos) > 1): ?>
+        (function() {
+            const slider = document.getElementById('newsPhotoSlider');
+            const prevBtn = document.getElementById('newsSliderPrev');
+            const nextBtn = document.getElementById('newsSliderNext');
+            const dots = document.querySelectorAll('.news-slider-dot');
+            const slides = document.querySelectorAll('.news-photo-slide');
+            let currentIndex = 0;
+            const totalSlides = slides.length;
+
+            function updateSlider() {
+                slides.forEach((slide, index) => {
+                    slide.classList.remove('active');
+                    if (index === currentIndex) {
+                        slide.classList.add('active');
+                    }
+                });
+
+                dots.forEach((dot, index) => {
+                    dot.classList.remove('active');
+                    if (index === currentIndex) {
+                        dot.classList.add('active');
+                    }
+                });
+
+                // Update button states
+                if (prevBtn) {
+                    prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '0.9';
+                    prevBtn.disabled = currentIndex === 0;
+                }
+                if (nextBtn) {
+                    nextBtn.style.opacity = currentIndex >= totalSlides - 1 ? '0.5' : '0.9';
+                    nextBtn.disabled = currentIndex >= totalSlides - 1;
+                }
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function() {
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        updateSlider();
+                    }
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    if (currentIndex < totalSlides - 1) {
+                        currentIndex++;
+                        updateSlider();
+                    }
+                });
+            }
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    currentIndex = index;
+                    updateSlider();
+                });
+            });
+
+            // Initialize
+            updateSlider();
+
+            // Auto-play (optional, uncomment if needed)
+            // setInterval(function() {
+            //     if (currentIndex < totalSlides - 1) {
+            //         currentIndex++;
+            //     } else {
+            //         currentIndex = 0;
+            //     }
+            //     updateSlider();
+            // }, 5000);
+        })();
+        <?php endif; ?>
+
         function openLightbox(imageSrc, caption) {
             const lightbox = document.getElementById('lightbox');
             const lightboxImage = document.getElementById('lightboxImage');

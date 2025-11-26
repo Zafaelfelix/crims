@@ -778,7 +778,7 @@ if (!function_exists('renderAdminLayout')) {
                         </a>
                     </div>
                 </div>
-                <a href="#" class="disabled" title="Segera hadir">
+                <a href="/crims/admin/tentang.php" <?= $activePage === 'tentang' ? 'class="active"' : '' ?>>
                     <i class="fas fa-info-circle"></i>
                     <span>Tentang</span>
                 </a>
