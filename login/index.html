@@ -1,0 +1,149 @@
+<?php
+session_start();
+$errorMessage = $_SESSION['login_error'] ?? null;
+unset($_SESSION['login_error']);
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - CRIMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
+        body{
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:url('../bguns.jpeg') center/cover no-repeat fixed;
+        }
+        body::before{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:rgba(0,0,0,0.55);
+        }
+        .login-wrapper{
+            position:relative;
+            width:100%;
+            max-width:420px;
+            padding:40px;
+            border-radius:24px;
+            background:rgba(255,255,255,0.92);
+            box-shadow:0 25px 60px rgba(0,0,0,0.3);
+            z-index:1;
+            backdrop-filter:blur(10px);
+        }
+        .login-wrapper h1{
+            text-align:center;
+            font-size:28px;
+            color:#123b6d;
+            margin-bottom:8px;
+        }
+        .login-wrapper p{
+            text-align:center;
+            color:#5b5b5b;
+            margin-bottom:30px;
+        }
+        .form-group{
+            margin-bottom:20px;
+        }
+        label{
+            display:block;
+            color:#0f2851;
+            margin-bottom:8px;
+            font-weight:500;
+        }
+        .input-box{
+            position:relative;
+        }
+        .input-box input{
+            width:100%;
+            padding:14px 45px 14px 16px;
+            border-radius:12px;
+            border:2px solid rgba(18,59,109,0.15);
+            transition:0.3s;
+            font-size:15px;
+        }
+        .input-box input:focus{
+            outline:none;
+            border-color:#1e5ba8;
+            box-shadow:0 0 0 3px rgba(30,91,168,0.2);
+        }
+        .input-box i{
+            position:absolute;
+            right:15px;
+            top:50%;
+            transform:translateY(-50%);
+            color:#1e5ba8;
+        }
+        .btn-login{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            background:linear-gradient(135deg,#1e5ba8,#3f8bff);
+            color:#fff;
+            font-size:16px;
+            font-weight:600;
+            cursor:pointer;
+            margin-top:10px;
+            transition:0.3s;
+            box-shadow:0 12px 30px rgba(30,91,168,0.35);
+        }
+        .btn-login:hover{
+            transform:translateY(-2px);
+        }
+        .helper{
+            margin-top:18px;
+            text-align:center;
+            font-size:14px;
+            color:#1a1a1a;
+        }
+        .helper a{
+            color:#1e5ba8;
+            text-decoration:none;
+            font-weight:600;
+        }
+        .helper a:hover{text-decoration:underline;}
+        @media(max-width:480px){
+            .login-wrapper{margin:20px;padding:28px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <h1>CRIMS Admin</h1>
+        <p>Masuk untuk mengelola konten penelitian</p>
+        <?php if ($errorMessage): ?>
+            <div style="background:#fee;border:1px solid #f99;color:#b40000;padding:12px 16px;border-radius:10px;margin-bottom:18px;font-size:14px;">
+                <?= htmlspecialchars($errorMessage) ?>
+            </div>
+        <?php endif; ?>
+        <form method="POST" action="process_login.php">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-box">
+                    <input type="text" id="username" name="username" placeholder="Masukkan username" required>
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-box">
+                    <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-login">Masuk</button>
+        </form>
+        <div class="helper">
+            <a href="/">← Kembali ke Beranda</a>
+        </div>
+    </div>
+</body>
+</html>
+
