@@ -1,6 +1,31 @@
 <?php
 require_once __DIR__ . '/config.php';
 
+// Function to safely render HTML content from Summernote (only allow safe formatting tags)
+function renderSafeHtml($html) {
+    if (empty($html)) {
+        return '';
+    }
+    
+    // Allowed tags for formatting (safe tags only)
+    $allowedTags = '<p><br><b><strong><i><em><u><s><strike><span><div><ul><ol><li><h1><h2><h3><h4><h5><h6>';
+    
+    // Remove dangerous tags and attributes
+    $html = strip_tags($html, $allowedTags);
+    
+    // Remove dangerous attributes but keep style for formatting
+    $html = preg_replace_callback('/<([^>]+)>/i', function($matches) {
+        $tag = $matches[1];
+        // Remove dangerous attributes
+        $tag = preg_replace('/\s*on\w+\s*=\s*["\'][^"\']*["\']/i', '', $tag);
+        $tag = preg_replace('/\s*javascript\s*:/i', '', $tag);
+        // Keep style attribute for formatting
+        return '<' . $tag . '>';
+    }, $html);
+    
+    return $html;
+}
+
 $id = (int) ($_GET['id'] ?? 0);
 
 if ($id <= 0) {
@@ -223,6 +248,39 @@ $pageTitle = htmlspecialchars($project['title']);
             margin-bottom: 30px;
         }
         
+        .project-detail-summary p {
+            margin-bottom: 15px;
+            color: #475569;
+        }
+        
+        .project-detail-summary p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .project-detail-summary b,
+        .project-detail-summary strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .project-detail-summary i,
+        .project-detail-summary em {
+            font-style: italic;
+        }
+        
+        .project-detail-summary u {
+            text-decoration: underline;
+        }
+        
+        .project-detail-summary s,
+        .project-detail-summary strike {
+            text-decoration: line-through;
+        }
+        
+        .project-detail-summary span {
+            display: inline;
+        }
+        
         .project-detail-actions {
             margin-top: 40px;
             padding-top: 30px;
@@ -349,7 +407,7 @@ $pageTitle = htmlspecialchars($project['title']);
                     <div class="project-detail-body">
                         <?php if (!empty($project['summary'])): ?>
                             <div class="project-detail-summary">
-                                <?= $project['summary'] ?>
+                                <?= renderSafeHtml($project['summary']) ?>
                             </div>
                         <?php endif; ?>
                         

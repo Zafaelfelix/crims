@@ -14,6 +14,14 @@ if (!function_exists('renderMahasiswaLayout')) {
     <title><?= htmlspecialchars($pageTitle) ?> - Dashboard Mahasiswa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 4 CSS (required for Summernote BS4) -->
+    <?php if (strpos($pageTitle, 'Proyek') !== false || strpos($pageTitle, 'Prestasi') !== false || strpos($pageTitle, 'Achievements') !== false || strpos($content, 'id="summary"') !== false || strpos($content, 'id="description"') !== false): ?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- Summernote CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <?php endif; ?>
+    <!-- jQuery (required for Summernote) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -588,6 +596,244 @@ if (!function_exists('renderMahasiswaLayout')) {
             });
         }
     </script>
+    
+    <!-- Bootstrap 4 JS and Summernote JS (hanya untuk halaman yang membutuhkan) -->
+    <?php if (strpos($pageTitle, 'Proyek') !== false || strpos($pageTitle, 'Prestasi') !== false || strpos($pageTitle, 'Achievements') !== false || strpos($content, 'id="summary"') !== false || strpos($content, 'id="description"') !== false): ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+    <script>
+        // Initialize Summernote after all scripts are loaded
+        window.addEventListener('load', function() {
+            function initSummernote() {
+                if (typeof jQuery === 'undefined' || typeof $.fn.summernote === 'undefined') {
+                    setTimeout(initSummernote, 100);
+                    return;
+                }
+                
+                // Initialize for summary textarea
+                var $summary = $('#summary');
+                if ($summary.length > 0 && !$summary.next('.note-editor').length) {
+                    $summary.summernote({
+                        height: 300,
+                        toolbar: [
+                            ['style', ['style']],
+                            ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                            ['fontsize', ['fontsize']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['height', ['height']]
+                        ],
+                        disableDragAndDrop: true,
+                        popover: {
+                            image: [],
+                            link: [],
+                            air: []
+                        },
+                        callbacks: {
+                            onInit: function() {
+                                var $editor = $summary.next('.note-editor');
+                                var $editable = $editor.find('.note-editable');
+                                
+                                function updateCharCounter() {
+                                    var content = $editable.text();
+                                    var charCount = content.length;
+                                    
+                                    var $counter = $editor.find('.summernote-char-counter');
+                                    if ($counter.length === 0) {
+                                        $counter = $('<div class="summernote-char-counter">0 karakter</div>');
+                                        $editor.append($counter);
+                                    }
+                                    $counter.text(charCount + ' karakter');
+                                }
+                                
+                                $editable.on('input keyup paste', function() {
+                                    setTimeout(updateCharCounter, 10);
+                                });
+                                
+                                setTimeout(updateCharCounter, 100);
+                            }
+                        },
+                        placeholder: 'Tulis ringkasan proyek di sini...',
+                        lang: 'id-ID'
+                    });
+                }
+                
+                // Initialize for description textarea (for achievements)
+                var $description = $('#description');
+                if ($description.length > 0 && !$description.next('.note-editor').length) {
+                    $description.summernote({
+                        height: 300,
+                        toolbar: [
+                            ['style', ['style']],
+                            ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                            ['fontsize', ['fontsize']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['height', ['height']]
+                        ],
+                        disableDragAndDrop: true,
+                        popover: {
+                            image: [],
+                            link: [],
+                            air: []
+                        },
+                        callbacks: {
+                            onInit: function() {
+                                var $editor = $description.next('.note-editor');
+                                var $editable = $editor.find('.note-editable');
+                                
+                                function updateCharCounter() {
+                                    var content = $editable.text();
+                                    var charCount = content.length;
+                                    
+                                    var $counter = $editor.find('.summernote-char-counter');
+                                    if ($counter.length === 0) {
+                                        $counter = $('<div class="summernote-char-counter">0 karakter</div>');
+                                        $editor.append($counter);
+                                    }
+                                    $counter.text(charCount + ' karakter');
+                                }
+                                
+                                $editable.on('input keyup paste', function() {
+                                    setTimeout(updateCharCounter, 10);
+                                });
+                                
+                                setTimeout(updateCharCounter, 100);
+                            }
+                        },
+                        placeholder: 'Tulis deskripsi prestasi di sini...',
+                        lang: 'id-ID'
+                    });
+                }
+            }
+            setTimeout(initSummernote, 200);
+        });
+    </script>
+    <style>
+        /* Dark Toolbar, White Editor Background */
+        .note-editor.note-frame {
+            border: 2px solid #333 !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+            margin-top: 8px;
+            background: #ffffff !important;
+        }
+        .note-editor .note-toolbar {
+            background: #2d2d2d !important;
+            border-bottom: 1px solid #444 !important;
+            padding: 8px !important;
+        }
+        .note-editor .note-toolbar button {
+            background: #3a3a3a !important;
+            border-color: #444 !important;
+            color: #fff !important;
+            transition: none !important;
+            transform: none !important;
+        }
+        .note-editor .note-toolbar button:hover {
+            background: #3a3a3a !important;
+            border-color: #444 !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .note-editor .note-toolbar button:active {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-toggle {
+            background: #3a3a3a !important;
+            color: #fff !important;
+            transition: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-toggle:hover {
+            background: #3a3a3a !important;
+            transform: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-menu {
+            background: #2d2d2d !important;
+            border-color: #444 !important;
+            transition: none !important;
+            animation: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-item {
+            color: #fff !important;
+            transition: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-item:hover {
+            background: #2d2d2d !important;
+            color: #fff !important;
+            transform: none !important;
+        }
+        /* Remove all transitions and animations */
+        .note-editor * {
+            transition: none !important;
+            animation: none !important;
+        }
+        .note-editor .note-toolbar * {
+            transition: none !important;
+            animation: none !important;
+        }
+        .note-editor .note-editing-area * {
+            transition: none !important;
+            animation: none !important;
+        }
+        .note-editor .note-editing-area {
+            background: #ffffff !important;
+        }
+        .note-editor .note-editing-area .note-editable {
+            min-height: 250px !important;
+            padding: 15px !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        .note-editor .note-editing-area .note-editable:focus {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        .note-editor .note-editing-area .note-editable::placeholder {
+            color: #999 !important;
+        }
+        .note-editor .note-statusbar,
+        .note-editor .note-status-output,
+        .note-editor .note-resizebar,
+        .note-editor .note-editing-area * {
+            background: #ffffff !important;
+        }
+        .note-editor .note-editing-area p,
+        .note-editor .note-editing-area div,
+        .note-editor .note-editing-area span,
+        .note-editor .note-editing-area li,
+        .note-editor .note-editing-area ul,
+        .note-editor .note-editing-area ol {
+            color: #000000 !important;
+        }
+        /* Character counter styling */
+        .summernote-char-counter {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: #666;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .note-editor.note-frame {
+            position: relative;
+        }
+        /* Hide font family and color picker */
+        .note-editor .note-toolbar .note-fontname,
+        .note-editor .note-toolbar .note-color,
+        .note-editor .note-toolbar button[data-event="color"],
+        .note-editor .note-toolbar button[data-event="fontName"],
+        .note-editor .note-toolbar .btn-group:has(button[data-event="color"]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event="fontName"]) {
+            display: none !important;
+        }
+    </style>
+    <?php endif; ?>
 </body>
 </html>
         <?php

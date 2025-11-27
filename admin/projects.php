@@ -328,13 +328,6 @@ ob_start();
         </div>
     </div>
     
-    <!-- Summernote CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
-    
-    <!-- Summernote JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
-    
     <script>
         // Initialize Summernote
         $(document).ready(function() {
@@ -357,6 +350,7 @@ ob_start();
                 fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '36', '48']
             });
         });
+        
     </script>
 <?php
 $content = ob_get_clean();

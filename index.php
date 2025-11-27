@@ -1,6 +1,31 @@
 <?php
 require_once __DIR__ . '/config.php';
 
+// Function to safely render HTML content from Summernote (only allow safe formatting tags)
+function renderSafeHtml($html) {
+    if (empty($html)) {
+        return '';
+    }
+    
+    // Allowed tags for formatting (safe tags only)
+    $allowedTags = '<p><br><b><strong><i><em><u><s><strike><span><div><ul><ol><li><h1><h2><h3><h4><h5><h6>';
+    
+    // Remove dangerous tags and attributes
+    $html = strip_tags($html, $allowedTags);
+    
+    // Remove dangerous attributes but keep style for formatting
+    $html = preg_replace_callback('/<([^>]+)>/i', function($matches) {
+        $tag = $matches[1];
+        // Remove dangerous attributes
+        $tag = preg_replace('/\s*on\w+\s*=\s*["\'][^"\']*["\']/i', '', $tag);
+        $tag = preg_replace('/\s*javascript\s*:/i', '', $tag);
+        // Keep style attribute for formatting
+        return '<' . $tag . '>';
+    }, $html);
+    
+    return $html;
+}
+
 $partnerItems = [];
 $partnerQuery = $mysqli->query('SELECT id, name, logo_url, website_url, category FROM partner_items ORDER BY sort_order ASC, name ASC');
 if ($partnerQuery) {
@@ -264,7 +289,7 @@ function newsImageSrc(?string $path): string {
                             <?php endif; ?>
                             <h3><?= htmlspecialchars($project['title']) ?></h3>
                             <?php if (!empty($project['summary'])): ?>
-                                <p><?= htmlspecialchars($project['summary']) ?></p>
+                                <div class="project-summary"><?= renderSafeHtml($project['summary']) ?></div>
                             <?php endif; ?>
                             <a href="/crims/project_detail.php?id=<?= $project['id'] ?>" class="btn-link" onclick="event.stopPropagation();">Selengkapnya <i class="fas fa-arrow-right"></i></a>
                         </div>
@@ -307,7 +332,7 @@ function newsImageSrc(?string $path): string {
                     <div class="news-content">
                                 <h3><?= htmlspecialchars($news['title']) ?></h3>
                                 <?php if (!empty($news['summary'])): ?>
-                                    <p><?= htmlspecialchars($news['summary']) ?></p>
+                                    <div class="news-summary"><?= renderSafeHtml($news['summary']) ?></div>
                                 <?php endif; ?>
                                 <div class="news-meta">
                                     <div class="news-meta-item" title="Tanggal Upload">
@@ -398,7 +423,7 @@ function newsImageSrc(?string $path): string {
                                     <div class="achievement-modern-content">
                                         <h3><?= htmlspecialchars($achievement['title']) ?></h3>
                                         <?php if (!empty($achievement['description'])): ?>
-                                            <div><?= $achievement['description'] ?></div>
+                                            <div class="achievement-description"><?= renderSafeHtml($achievement['description']) ?></div>
                                         <?php endif; ?>
                     </div>
                 </div>

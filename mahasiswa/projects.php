@@ -261,7 +261,8 @@ ob_start();
 
                 <div class="form-group">
                     <label for="summary">Ringkasan Proyek</label>
-                    <textarea id="summary" name="summary" placeholder="Deskripsi singkat tentang proyek..."><?= htmlspecialchars($formData['summary'] ?? '') ?></textarea>
+                    <textarea id="summary" name="summary" placeholder="Deskripsi singkat tentang proyek..."><?= $formData['summary'] ?? '' ?></textarea>
+                    <small style="color:#6b7a90;margin-top:4px;font-size:12px">Gunakan toolbar di atas untuk memformat teks (Bold, Italic, Underline, dll)</small>
                 </div>
 
                 <div class="form-row">

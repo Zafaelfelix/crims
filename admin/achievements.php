@@ -225,7 +225,7 @@ ob_start();
 
                 <div class="form-group">
                     <label for="description">Deskripsi</label>
-                    <textarea id="description" name="description" class="summernote-editor" placeholder="Tulis deskripsi prestasi di sini..."><?= $formData['description'] ?? '' ?></textarea>
+                    <textarea id="description" name="description" placeholder="Tulis deskripsi prestasi di sini..."><?= $formData['description'] ?? '' ?></textarea>
                     <small style="color:#6b7a90;margin-top:4px;font-size:12px">Gunakan toolbar di atas untuk memformat teks (Bold, Italic, Underline, dll)</small>
                 </div>
 
@@ -338,75 +338,6 @@ ob_start();
                         preview.className = e.target.value || 'fas fa-trophy';
                     }
                 });
-            }
-        })();
-        
-        // Initialize Summernote - tunggu sampai semua script dimuat
-        (function() {
-            function initSummernote() {
-                // Pastikan jQuery sudah dimuat
-                if (typeof jQuery === 'undefined' || typeof window.$ === 'undefined') {
-                    console.log('Menunggu jQuery...');
-                    setTimeout(initSummernote, 100);
-                    return;
-                }
-                
-                var $ = jQuery;
-                
-                // Pastikan Summernote sudah dimuat
-                if (typeof $.fn.summernote === 'undefined') {
-                    console.log('Menunggu Summernote...');
-                    setTimeout(initSummernote, 100);
-                    return;
-                }
-                
-                // Pastikan element ada
-                var $desc = $('#description');
-                if ($desc.length === 0) {
-                    console.log('Element #description belum ditemukan...');
-                    setTimeout(initSummernote, 100);
-                    return;
-                }
-                
-                // Cek apakah sudah diinisialisasi
-                if ($desc.summernote('isEmpty') !== undefined) {
-                    console.log('Summernote sudah diinisialisasi');
-                    return;
-                }
-                
-                // Inisialisasi Summernote
-                try {
-                    $desc.summernote({
-                        height: 300,
-                        toolbar: [
-                            ['style', ['style']],
-                            ['font', ['bold', 'italic', 'underline', 'clear']],
-                            ['fontname', ['fontname']],
-                            ['fontsize', ['fontsize']],
-                            ['color', ['color']],
-                            ['para', ['ul', 'ol', 'paragraph']],
-                            ['table', ['table']],
-                            ['insert', ['link', 'picture', 'video']],
-                            ['view', ['fullscreen', 'codeview', 'help']]
-                        ],
-                        placeholder: 'Tulis deskripsi prestasi di sini...',
-                        lang: 'id-ID',
-                        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana'],
-                        fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '36', '48']
-                    });
-                    console.log('Summernote berhasil diinisialisasi!');
-                } catch (e) {
-                    console.error('Error inisialisasi Summernote:', e);
-                }
-            }
-            
-            // Jalankan setelah DOM ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    setTimeout(initSummernote, 200);
-                });
-            } else {
-                setTimeout(initSummernote, 200);
             }
         })();
     </script>

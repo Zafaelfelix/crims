@@ -1140,6 +1140,144 @@ a:hover {
     line-height: 1.7;
 }
 
+.project-summary {
+    color: var(--gray);
+    margin-bottom: 20px;
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.project-summary p {
+    margin-bottom: 10px;
+    color: var(--gray);
+}
+
+.project-summary p:last-child {
+    margin-bottom: 0;
+}
+
+.project-summary b,
+.project-summary strong {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.project-summary i,
+.project-summary em {
+    font-style: italic;
+}
+
+.project-summary u {
+    text-decoration: underline;
+}
+
+.project-summary s,
+.project-summary strike {
+    text-decoration: line-through;
+}
+
+.project-summary span {
+    display: inline;
+}
+
+.projects-slider .project-content .project-summary {
+    font-size: 0.95rem;
+    margin-bottom: 18px;
+    line-height: 1.6;
+    color: #64748b;
+}
+
+.projects-slider .project-content .project-summary p {
+    margin-bottom: 8px;
+    color: #64748b;
+}
+
+.projects-slider .project-content .project-summary p:last-child {
+    margin-bottom: 0;
+}
+
+/* News Summary Styling */
+.news-summary {
+    color: var(--gray);
+    margin-bottom: 15px;
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.news-summary p {
+    margin-bottom: 10px;
+    color: var(--gray);
+}
+
+.news-summary p:last-child {
+    margin-bottom: 0;
+}
+
+.news-summary b,
+.news-summary strong {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.news-summary i,
+.news-summary em {
+    font-style: italic;
+}
+
+.news-summary u {
+    text-decoration: underline;
+}
+
+.news-summary s,
+.news-summary strike {
+    text-decoration: line-through;
+}
+
+.news-summary span {
+    display: inline;
+}
+
+/* Achievement Description Styling */
+.achievement-description {
+    color: var(--gray);
+    margin-bottom: 15px;
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.achievement-description p {
+    margin-bottom: 10px;
+    color: var(--gray);
+}
+
+.achievement-description p:last-child {
+    margin-bottom: 0;
+}
+
+.achievement-description b,
+.achievement-description strong {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.achievement-description i,
+.achievement-description em {
+    font-style: italic;
+}
+
+.achievement-description u {
+    text-decoration: underline;
+}
+
+.achievement-description s,
+.achievement-description strike {
+    text-decoration: line-through;
+}
+
+.achievement-description span {
+    display: inline;
+}
+
 /* News Section */
 .latest-news {
     padding: 120px 40px;
@@ -1347,6 +1485,65 @@ a:hover {
 }
 
 .news-card:hover .news-content p {
+    color: #475569;
+}
+
+.news-content .news-summary {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+    transition: color 0.3s ease;
+    text-align: center;
+    width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.news-content .news-summary p {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0 0 8px 0;
+    display: block;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: unset;
+    overflow: visible;
+    text-overflow: unset;
+}
+
+.news-content .news-summary p:last-child {
+    margin-bottom: 0;
+}
+
+.news-content .news-summary b,
+.news-content .news-summary strong {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.news-content .news-summary i,
+.news-content .news-summary em {
+    font-style: italic;
+}
+
+.news-content .news-summary u {
+    text-decoration: underline;
+}
+
+.news-content .news-summary s,
+.news-content .news-summary strike {
+    text-decoration: line-through;
+}
+
+.news-content .news-summary span {
+    display: inline;
+}
+
+.news-card:hover .news-content .news-summary {
     color: #475569;
 }
 
@@ -1904,6 +2101,63 @@ a:hover {
 }
 
 .achievement-modern-card:hover .achievement-modern-content p {
+    color: #475569;
+}
+
+.achievement-modern-content .achievement-description {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+    transition: color 0.3s ease;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.achievement-modern-content .achievement-description p {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0 0 8px 0;
+    display: block;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: unset;
+    overflow: visible;
+    text-overflow: unset;
+}
+
+.achievement-modern-content .achievement-description p:last-child {
+    margin-bottom: 0;
+}
+
+.achievement-modern-content .achievement-description b,
+.achievement-modern-content .achievement-description strong {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.achievement-modern-content .achievement-description i,
+.achievement-modern-content .achievement-description em {
+    font-style: italic;
+}
+
+.achievement-modern-content .achievement-description u {
+    text-decoration: underline;
+}
+
+.achievement-modern-content .achievement-description s,
+.achievement-modern-content .achievement-description strike {
+    text-decoration: line-through;
+}
+
+.achievement-modern-content .achievement-description span {
+    display: inline;
+}
+
+.achievement-modern-card:hover .achievement-modern-content .achievement-description {
     color: #475569;
 }
 

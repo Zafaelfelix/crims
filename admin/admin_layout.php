@@ -10,9 +10,232 @@ if (!function_exists('renderAdminLayout')) {
     <title><?= htmlspecialchars($pageTitle) ?> - AdminCrims</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Summernote CSS (hanya untuk halaman yang membutuhkan) -->
-    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($content, 'id="description"') !== false): ?>
+    <!-- Bootstrap 4 CSS (required for Summernote BS4) -->
+    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($pageTitle, 'Achievements') !== false || strpos($content, 'id="description"') !== false || strpos($content, 'id="summary"') !== false || strpos($pageTitle, 'Proyek') !== false || strpos($pageTitle, 'Project') !== false): ?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- Summernote CSS -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <style>
+        /* Dark Toolbar, White Editor Background */
+        .note-editor.note-frame {
+            border: 2px solid #333 !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+            margin-top: 8px;
+            background: #ffffff !important;
+        }
+        .note-editor .note-toolbar {
+            background: #2d2d2d !important;
+            border-bottom: 1px solid #444 !important;
+            padding: 8px !important;
+        }
+        .note-editor .note-toolbar button {
+            background: #3a3a3a !important;
+            border-color: #444 !important;
+            color: #fff !important;
+            transition: none !important;
+            transform: none !important;
+        }
+        .note-editor .note-toolbar button:hover {
+            background: #3a3a3a !important;
+            border-color: #444 !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .note-editor .note-toolbar button:active {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-toggle {
+            background: #3a3a3a !important;
+            color: #fff !important;
+            transition: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-toggle:hover {
+            background: #3a3a3a !important;
+            transform: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-menu {
+            background: #2d2d2d !important;
+            border-color: #444 !important;
+            transition: none !important;
+            animation: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-item {
+            color: #fff !important;
+            transition: none !important;
+        }
+        .note-editor .note-toolbar .dropdown-item:hover {
+            background: #2d2d2d !important;
+            color: #fff !important;
+            transform: none !important;
+        }
+        /* Remove all transitions and animations */
+        .note-editor * {
+            transition: none !important;
+            animation: none !important;
+        }
+        .note-editor .note-toolbar * {
+            transition: none !important;
+            animation: none !important;
+        }
+        .note-editor .note-editing-area * {
+            transition: none !important;
+            animation: none !important;
+        }
+        .note-editor .note-editing-area {
+            background: #ffffff !important;
+        }
+        .note-editor .note-editing-area .note-editable {
+            min-height: 250px !important;
+            padding: 15px !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        .note-editor .note-editing-area .note-editable:focus {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        .note-editor .note-editing-area .note-editable::placeholder {
+            color: #999 !important;
+        }
+        /* Ensure all areas below toolbar are white */
+        .note-editor .note-statusbar,
+        .note-editor .note-status-output,
+        .note-editor .note-resizebar,
+        .note-editor .note-editing-area * {
+            background: #ffffff !important;
+        }
+        .note-editor .note-editing-area p,
+        .note-editor .note-editing-area div,
+        .note-editor .note-editing-area span,
+        .note-editor .note-editing-area li,
+        .note-editor .note-editing-area ul,
+        .note-editor .note-editing-area ol {
+            color: #000000 !important;
+        }
+        /* Character counter styling */
+        .summernote-char-counter {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: #666;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .note-editor.note-frame {
+            position: relative;
+        }
+        /* Hide font family and color picker */
+        .note-editor .note-toolbar .note-fontname,
+        .note-editor .note-toolbar .note-color,
+        .note-editor .note-toolbar button[data-event="color"],
+        .note-editor .note-toolbar button[data-event="fontName"],
+        .note-editor .note-toolbar button[title*="Font Family" i],
+        .note-editor .note-toolbar button[title*="Color" i],
+        .note-editor .note-toolbar button[title*="Text Color" i],
+        .note-editor .note-toolbar .btn-group:has(button[data-event="color"]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event="fontName"]),
+        .note-editor .note-toolbar .btn-group:has(.note-fontname),
+        .note-editor .note-toolbar .btn-group:has(.note-color) {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        /* Hide unwanted toolbar buttons - ULTRA COMPREHENSIVE */
+        .note-editor .note-toolbar .note-table,
+        .note-editor .note-toolbar .note-link,
+        .note-editor .note-toolbar .note-picture,
+        .note-editor .note-toolbar .note-video,
+        .note-editor .note-toolbar .note-fullscreen,
+        .note-editor .note-toolbar .note-codeview,
+        .note-editor .note-toolbar .note-help,
+        .note-editor .note-toolbar button[data-original-title*="Table" i],
+        .note-editor .note-toolbar button[data-original-title*="Link" i],
+        .note-editor .note-toolbar button[data-original-title*="Picture" i],
+        .note-editor .note-toolbar button[data-original-title*="Image" i],
+        .note-editor .note-toolbar button[data-original-title*="Video" i],
+        .note-editor .note-toolbar button[data-original-title*="Fullscreen" i],
+        .note-editor .note-toolbar button[data-original-title*="Code" i],
+        .note-editor .note-toolbar button[data-original-title*="Help" i],
+        .note-editor .note-toolbar button[data-event*="link" i],
+        .note-editor .note-toolbar button[data-event*="image" i],
+        .note-editor .note-toolbar button[data-event*="picture" i],
+        .note-editor .note-toolbar button[data-event*="video" i],
+        .note-editor .note-toolbar button[data-event*="table" i],
+        .note-editor .note-toolbar button[data-event*="fullscreen" i],
+        .note-editor .note-toolbar button[data-event*="codeview" i],
+        .note-editor .note-toolbar button[data-event*="help" i],
+        .note-editor .note-toolbar button[title*="link" i],
+        .note-editor .note-toolbar button[title*="picture" i],
+        .note-editor .note-toolbar button[title*="image" i],
+        .note-editor .note-toolbar button[title*="video" i],
+        .note-editor .note-toolbar button[title*="table" i],
+        .note-editor .note-toolbar button[title*="fullscreen" i],
+        .note-editor .note-toolbar button[title*="code" i],
+        .note-editor .note-toolbar button[title*="help" i],
+        .note-editor .note-toolbar button:has(.fa-link),
+        .note-editor .note-toolbar button:has(.fa-chain),
+        .note-editor .note-toolbar button:has(.fa-image),
+        .note-editor .note-toolbar button:has(.fa-picture-o),
+        .note-editor .note-toolbar button:has(.fa-picture),
+        .note-editor .note-toolbar button:has(.fa-video),
+        .note-editor .note-toolbar button:has(.fa-video-camera),
+        .note-editor .note-toolbar button:has(.fa-expand),
+        .note-editor .note-toolbar button:has(.fa-arrows-alt),
+        .note-editor .note-toolbar button:has(.fa-code),
+        .note-editor .note-toolbar button:has(.fa-question),
+        .note-editor .note-toolbar button:has(.fa-question-circle),
+        .note-editor .note-toolbar button:has(.fa-table),
+        .note-editor .note-toolbar .fa-link,
+        .note-editor .note-toolbar .fa-chain,
+        .note-editor .note-toolbar .fa-image,
+        .note-editor .note-toolbar .fa-picture-o,
+        .note-editor .note-toolbar .fa-picture,
+        .note-editor .note-toolbar .fa-video,
+        .note-editor .note-toolbar .fa-video-camera,
+        .note-editor .note-toolbar .fa-expand,
+        .note-editor .note-toolbar .fa-arrows-alt,
+        .note-editor .note-toolbar .fa-code,
+        .note-editor .note-toolbar .fa-question,
+        .note-editor .note-toolbar .fa-question-circle,
+        .note-editor .note-toolbar .fa-table {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            position: absolute !important;
+            left: -9999px !important;
+        }
+        /* Hide parent button groups containing unwanted buttons */
+        .note-editor .note-toolbar .btn-group:has(button[data-event*="link" i]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event*="image" i]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event*="picture" i]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event*="video" i]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event*="table" i]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event*="fullscreen" i]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event*="codeview" i]),
+        .note-editor .note-toolbar .btn-group:has(button[data-event*="help" i]),
+        .note-editor .note-toolbar .btn-group:has(.fa-link),
+        .note-editor .note-toolbar .btn-group:has(.fa-image),
+        .note-editor .note-toolbar .btn-group:has(.fa-picture),
+        .note-editor .note-toolbar .btn-group:has(.fa-video),
+        .note-editor .note-toolbar .btn-group:has(.fa-expand),
+        .note-editor .note-toolbar .btn-group:has(.fa-code),
+        .note-editor .note-toolbar .btn-group:has(.fa-question),
+        .note-editor .note-toolbar .btn-group:has(.fa-table) {
+            display: none !important;
+            visibility: hidden !important;
+        }
+    </style>
     <?php endif; ?>
     <!-- jQuery (required for Summernote and other scripts) -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -861,9 +1084,592 @@ if (!function_exists('renderAdminLayout')) {
         }
     </script>
     
-    <!-- Summernote JS (hanya untuk halaman yang membutuhkan) -->
-    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($content, 'id="description"') !== false): ?>
+    <!-- Bootstrap 4 JS (required for Summernote BS4) -->
+    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($pageTitle, 'Achievements') !== false || strpos($content, 'id="description"') !== false || strpos($content, 'id="summary"') !== false || strpos($pageTitle, 'Proyek') !== false || strpos($pageTitle, 'Project') !== false): ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+    <script>
+        // Initialize Summernote after all scripts are loaded
+        window.addEventListener('load', function() {
+            function initSummernote() {
+                if (typeof jQuery === 'undefined') {
+                    console.error('jQuery tidak ditemukan');
+                    return;
+                }
+                if (typeof $.fn.summernote === 'undefined') {
+                    console.error('Summernote plugin tidak ditemukan');
+                    return;
+                }
+                
+                // Initialize for summary textarea
+                var $summary = $('#summary');
+                if ($summary.length > 0 && !$summary.next('.note-editor').length) {
+                    $summary.summernote({
+                        height: 300,
+                        toolbar: [
+                            ['style', ['style']],
+                            ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                            ['fontsize', ['fontsize']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['height', ['height']]
+                        ],
+                        disableDragAndDrop: true,
+                        popover: {
+                            image: [],
+                            link: [],
+                            air: []
+                        },
+                        callbacks: {
+                            onInit: function() {
+                                // Aggressive removal of unwanted buttons
+                                function removeUnwantedButtons() {
+                                    var $editor = $summary.next('.note-editor');
+                                    if ($editor.length === 0) {
+                                        setTimeout(removeUnwantedButtons, 50);
+                                        return;
+                                    }
+                                    
+                                    var $toolbar = $editor.find('.note-toolbar');
+                                    if ($toolbar.length === 0) {
+                                        setTimeout(removeUnwantedButtons, 50);
+                                        return;
+                                    }
+                                    
+                                    // Remove ALL buttons that contain link, picture, video, table, fullscreen, codeview, help icons
+                                    $toolbar.find('button').each(function() {
+                                        var $btn = $(this);
+                                        var btnHtml = $btn.html().toLowerCase();
+                                        var btnTitle = ($btn.attr('title') || '').toLowerCase();
+                                        var btnDataEvent = ($btn.attr('data-event') || '').toLowerCase();
+                                        var btnClass = $btn.attr('class') || '';
+                                        
+                                        // Check if button contains unwanted features
+                                        var isUnwanted = false;
+                                        
+                                        // Check for link
+                                        if (btnHtml.includes('fa-link') || btnHtml.includes('fa-chain') || 
+                                            btnTitle.includes('link') || btnDataEvent.includes('link') ||
+                                            btnClass.includes('note-link')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for picture/image
+                                        if (btnHtml.includes('fa-image') || btnHtml.includes('fa-picture') || 
+                                            btnTitle.includes('picture') || btnTitle.includes('image') || 
+                                            btnDataEvent.includes('image') || btnDataEvent.includes('picture') ||
+                                            btnClass.includes('note-picture')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for video
+                                        if (btnHtml.includes('fa-video') || 
+                                            btnTitle.includes('video') || btnDataEvent.includes('video') ||
+                                            btnClass.includes('note-video')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for table
+                                        if (btnHtml.includes('fa-table') || 
+                                            btnTitle.includes('table') || btnDataEvent.includes('table') ||
+                                            btnClass.includes('note-table')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for fullscreen
+                                        if (btnHtml.includes('fa-expand') || btnHtml.includes('fa-arrows-alt') || 
+                                            btnTitle.includes('fullscreen') || btnDataEvent.includes('fullscreen') ||
+                                            btnClass.includes('note-fullscreen')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for codeview
+                                        if (btnHtml.includes('fa-code') || btnHtml.includes('</>') || 
+                                            btnTitle.includes('code') || btnDataEvent.includes('codeview') ||
+                                            btnClass.includes('note-codeview')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for help
+                                        if (btnHtml.includes('fa-question') || 
+                                            btnTitle.includes('help') || btnDataEvent.includes('help') ||
+                                            btnClass.includes('note-help')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for font family
+                                        if (btnDataEvent.includes('fontname') || btnDataEvent.includes('fontname') ||
+                                            btnTitle.includes('font') || btnTitle.includes('family') ||
+                                            btnClass.includes('note-fontname')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for color picker
+                                        if (btnDataEvent.includes('color') ||
+                                            btnTitle.includes('color') || btnTitle.includes('text color') ||
+                                            btnClass.includes('note-color')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        if (isUnwanted) {
+                                            var $btnGroup = $btn.closest('.btn-group');
+                                            if ($btnGroup.length > 0) {
+                                                $btnGroup.remove();
+                                            } else {
+                                                $btn.remove();
+                                            }
+                                        }
+                                    });
+                                    
+                                    // Also remove by direct selectors
+                                    $toolbar.find('button[data-event*="link"], button[data-event*="image"], button[data-event*="picture"], button[data-event*="video"], button[data-event*="table"], button[data-event*="fullscreen"], button[data-event*="codeview"], button[data-event*="help"], button[data-event*="color"], button[data-event*="fontname"]').closest('.btn-group').remove();
+                                }
+                                
+                                // Multiple aggressive attempts
+                                setTimeout(removeUnwantedButtons, 50);
+                                setTimeout(removeUnwantedButtons, 150);
+                                setTimeout(removeUnwantedButtons, 300);
+                                setTimeout(removeUnwantedButtons, 500);
+                                setTimeout(removeUnwantedButtons, 1000);
+                                setTimeout(removeUnwantedButtons, 2000);
+                                
+                                // Continuous monitoring with MutationObserver
+                                setTimeout(function() {
+                                    var $editor = $summary.next('.note-editor');
+                                    if ($editor.length > 0) {
+                                        var observer = new MutationObserver(function() {
+                                            removeUnwantedButtons();
+                                        });
+                                        observer.observe($editor[0], {
+                                            childList: true,
+                                            subtree: true,
+                                            attributes: true
+                                        });
+                                    }
+                                }, 100);
+                            }
+                        },
+                        callbacks: {
+                            onInit: function() {
+                                // Aggressive removal of unwanted buttons
+                                function removeUnwantedButtons() {
+                                    var $editor = $summary.next('.note-editor');
+                                    if ($editor.length === 0) {
+                                        setTimeout(removeUnwantedButtons, 50);
+                                        return;
+                                    }
+                                    
+                                    var $toolbar = $editor.find('.note-toolbar');
+                                    if ($toolbar.length === 0) {
+                                        setTimeout(removeUnwantedButtons, 50);
+                                        return;
+                                    }
+                                    
+                                    // Remove ALL buttons that contain link, picture, video, table, fullscreen, codeview, help icons
+                                    $toolbar.find('button').each(function() {
+                                        var $btn = $(this);
+                                        var btnHtml = $btn.html().toLowerCase();
+                                        var btnTitle = ($btn.attr('title') || '').toLowerCase();
+                                        var btnDataEvent = ($btn.attr('data-event') || '').toLowerCase();
+                                        var btnClass = $btn.attr('class') || '';
+                                        
+                                        // Check if button contains unwanted features
+                                        var isUnwanted = false;
+                                        
+                                        // Check for link
+                                        if (btnHtml.includes('fa-link') || btnHtml.includes('fa-chain') || 
+                                            btnTitle.includes('link') || btnDataEvent.includes('link') ||
+                                            btnClass.includes('note-link')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for picture/image
+                                        if (btnHtml.includes('fa-image') || btnHtml.includes('fa-picture') || 
+                                            btnTitle.includes('picture') || btnTitle.includes('image') || 
+                                            btnDataEvent.includes('image') || btnDataEvent.includes('picture') ||
+                                            btnClass.includes('note-picture')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for video
+                                        if (btnHtml.includes('fa-video') || 
+                                            btnTitle.includes('video') || btnDataEvent.includes('video') ||
+                                            btnClass.includes('note-video')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for table
+                                        if (btnHtml.includes('fa-table') || 
+                                            btnTitle.includes('table') || btnDataEvent.includes('table') ||
+                                            btnClass.includes('note-table')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for fullscreen
+                                        if (btnHtml.includes('fa-expand') || btnHtml.includes('fa-arrows-alt') || 
+                                            btnTitle.includes('fullscreen') || btnDataEvent.includes('fullscreen') ||
+                                            btnClass.includes('note-fullscreen')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for codeview
+                                        if (btnHtml.includes('fa-code') || btnHtml.includes('</>') || 
+                                            btnTitle.includes('code') || btnDataEvent.includes('codeview') ||
+                                            btnClass.includes('note-codeview')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for help
+                                        if (btnHtml.includes('fa-question') || 
+                                            btnTitle.includes('help') || btnDataEvent.includes('help') ||
+                                            btnClass.includes('note-help')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for font family
+                                        if (btnDataEvent.includes('fontname') || btnDataEvent.includes('fontname') ||
+                                            btnTitle.includes('font') || btnTitle.includes('family') ||
+                                            btnClass.includes('note-fontname')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for color picker
+                                        if (btnDataEvent.includes('color') ||
+                                            btnTitle.includes('color') || btnTitle.includes('text color') ||
+                                            btnClass.includes('note-color')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        if (isUnwanted) {
+                                            var $btnGroup = $btn.closest('.btn-group');
+                                            if ($btnGroup.length > 0) {
+                                                $btnGroup.remove();
+                                            } else {
+                                                $btn.remove();
+                                            }
+                                        }
+                                    });
+                                    
+                                    // Also remove by direct selectors
+                                    $toolbar.find('button[data-event*="link"], button[data-event*="image"], button[data-event*="picture"], button[data-event*="video"], button[data-event*="table"], button[data-event*="fullscreen"], button[data-event*="codeview"], button[data-event*="help"], button[data-event*="color"], button[data-event*="fontname"]').closest('.btn-group').remove();
+                                }
+                                
+                                // Multiple aggressive attempts
+                                setTimeout(removeUnwantedButtons, 50);
+                                setTimeout(removeUnwantedButtons, 150);
+                                setTimeout(removeUnwantedButtons, 300);
+                                setTimeout(removeUnwantedButtons, 500);
+                                setTimeout(removeUnwantedButtons, 1000);
+                                setTimeout(removeUnwantedButtons, 2000);
+                                
+                                // Continuous monitoring with MutationObserver
+                                setTimeout(function() {
+                                    var $editor = $summary.next('.note-editor');
+                                    if ($editor.length > 0) {
+                                        var observer = new MutationObserver(function() {
+                                            removeUnwantedButtons();
+                                        });
+                                        observer.observe($editor[0], {
+                                            childList: true,
+                                            subtree: true,
+                                            attributes: true
+                                        });
+                                    }
+                                }, 100);
+                            }
+                        },
+                        placeholder: 'Tulis ringkasan proyek di sini...',
+                        lang: 'id-ID',
+                        fontNames: [
+                            'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 
+                            'Georgia', 'Helvetica', 'Impact', 'Lucida Console', 
+                            'Lucida Sans Unicode', 'Palatino Linotype', 'Tahoma', 
+                            'Times New Roman', 'Trebuchet MS', 'Verdana',
+                            'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins',
+                            'Raleway', 'Ubuntu', 'Playfair Display', 'Merriweather',
+                            'Oswald', 'Source Sans Pro', 'PT Sans', 'Lora'
+                        ],
+                        fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '32', '36', '48', '72'],
+                        colors: [
+                            ['#000000', 'Hitam'],
+                            ['#434343', 'Abu-abu Gelap'],
+                            ['#666666', 'Abu-abu'],
+                            ['#999999', 'Abu-abu Terang'],
+                            ['#b7b7b7', 'Abu-abu Muda'],
+                            ['#cccccc', 'Abu-abu Sangat Muda'],
+                            ['#d9d9d9', 'Abu-abu Pucat'],
+                            ['#efefef', 'Abu-abu Sangat Pucat'],
+                            ['#f3f3f3', 'Abu-abu Putih'],
+                            ['#ffffff', 'Putih'],
+                            ['#980000', 'Merah Gelap'],
+                            ['#ff0000', 'Merah'],
+                            ['#ff9900', 'Jingga'],
+                            ['#ffff00', 'Kuning'],
+                            ['#00ff00', 'Hijau'],
+                            ['#00ffff', 'Cyan'],
+                            ['#4a86e8', 'Biru'],
+                            ['#0000ff', 'Biru Gelap'],
+                            ['#9900ff', 'Ungu'],
+                            ['#ff00ff', 'Magenta'],
+                            ['#e6b8af', 'Merah Muda'],
+                            ['#f4cccc', 'Merah Muda Terang'],
+                            ['#fce5cd', 'Krem'],
+                            ['#fff2cc', 'Kuning Muda'],
+                            ['#d9ead3', 'Hijau Muda'],
+                            ['#d0e0e3', 'Biru Muda'],
+                            ['#c9daf8', 'Biru Langit'],
+                            ['#cfe2f3', 'Biru Pucat'],
+                            ['#d9d2e9', 'Ungu Muda'],
+                            ['#ead1dc', 'Pink'],
+                            ['#ff6b6b', 'Merah Terang'],
+                            ['#4ecdc4', 'Turquoise'],
+                            ['#45b7d1', 'Biru Terang'],
+                            ['#f7b731', 'Kuning Emas'],
+                            ['#5f27cd', 'Ungu Gelap'],
+                            ['#00d2d3', 'Cyan Terang'],
+                            ['#ff9ff3', 'Pink Terang'],
+                            ['#54a0ff', 'Biru Langit Terang'],
+                            ['#5f27cd', 'Ungu'],
+                            ['#c44569', 'Merah Muda Gelap']
+                        ]
+                    });
+                    console.log('Summernote initialized untuk #summary');
+                }
+                
+                // Initialize for description textarea (if exists)
+                var $description = $('#description');
+                if ($description.length > 0 && !$description.next('.note-editor').length) {
+                    $description.summernote({
+                        height: 300,
+                        toolbar: [
+                            ['style', ['style']],
+                            ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                            ['fontsize', ['fontsize']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['height', ['height']]
+                        ],
+                        disableDragAndDrop: true,
+                        popover: {
+                            image: [],
+                            link: [],
+                            air: []
+                        },
+                        callbacks: {
+                            onInit: function() {
+                                // Add character counter
+                                var $editor = $description.next('.note-editor');
+                                var $editable = $editor.find('.note-editable');
+                                
+                                function updateCharCounter() {
+                                    var content = $editable.text();
+                                    var charCount = content.length;
+                                    
+                                    var $counter = $editor.find('.summernote-char-counter');
+                                    if ($counter.length === 0) {
+                                        $counter = $('<div class="summernote-char-counter">0 karakter</div>');
+                                        $editor.append($counter);
+                                    }
+                                    $counter.text(charCount + ' karakter');
+                                }
+                                
+                                // Update on input
+                                $editable.on('input keyup paste', function() {
+                                    setTimeout(updateCharCounter, 10);
+                                });
+                                
+                                // Initial count
+                                setTimeout(updateCharCounter, 100);
+                                
+                                // Aggressive removal of unwanted buttons
+                                function removeUnwantedButtons() {
+                                    var $editor = $description.next('.note-editor');
+                                    if ($editor.length === 0) {
+                                        setTimeout(removeUnwantedButtons, 50);
+                                        return;
+                                    }
+                                    
+                                    var $toolbar = $editor.find('.note-toolbar');
+                                    if ($toolbar.length === 0) {
+                                        setTimeout(removeUnwantedButtons, 50);
+                                        return;
+                                    }
+                                    
+                                    // Remove ALL buttons that contain link, picture, video, table, fullscreen, codeview, help icons
+                                    $toolbar.find('button').each(function() {
+                                        var $btn = $(this);
+                                        var btnHtml = $btn.html().toLowerCase();
+                                        var btnTitle = ($btn.attr('title') || '').toLowerCase();
+                                        var btnDataEvent = ($btn.attr('data-event') || '').toLowerCase();
+                                        var btnClass = $btn.attr('class') || '';
+                                        
+                                        // Check if button contains unwanted features
+                                        var isUnwanted = false;
+                                        
+                                        // Check for link
+                                        if (btnHtml.includes('fa-link') || btnHtml.includes('fa-chain') || 
+                                            btnTitle.includes('link') || btnDataEvent.includes('link') ||
+                                            btnClass.includes('note-link')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for picture/image
+                                        if (btnHtml.includes('fa-image') || btnHtml.includes('fa-picture') || 
+                                            btnTitle.includes('picture') || btnTitle.includes('image') || 
+                                            btnDataEvent.includes('image') || btnDataEvent.includes('picture') ||
+                                            btnClass.includes('note-picture')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for video
+                                        if (btnHtml.includes('fa-video') || 
+                                            btnTitle.includes('video') || btnDataEvent.includes('video') ||
+                                            btnClass.includes('note-video')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for table
+                                        if (btnHtml.includes('fa-table') || 
+                                            btnTitle.includes('table') || btnDataEvent.includes('table') ||
+                                            btnClass.includes('note-table')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for fullscreen
+                                        if (btnHtml.includes('fa-expand') || btnHtml.includes('fa-arrows-alt') || 
+                                            btnTitle.includes('fullscreen') || btnDataEvent.includes('fullscreen') ||
+                                            btnClass.includes('note-fullscreen')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for codeview
+                                        if (btnHtml.includes('fa-code') || btnHtml.includes('</>') || 
+                                            btnTitle.includes('code') || btnDataEvent.includes('codeview') ||
+                                            btnClass.includes('note-codeview')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for help
+                                        if (btnHtml.includes('fa-question') || 
+                                            btnTitle.includes('help') || btnDataEvent.includes('help') ||
+                                            btnClass.includes('note-help')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for font family
+                                        if (btnDataEvent.includes('fontname') || btnDataEvent.includes('fontname') ||
+                                            btnTitle.includes('font') || btnTitle.includes('family') ||
+                                            btnClass.includes('note-fontname')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        // Check for color picker
+                                        if (btnDataEvent.includes('color') ||
+                                            btnTitle.includes('color') || btnTitle.includes('text color') ||
+                                            btnClass.includes('note-color')) {
+                                            isUnwanted = true;
+                                        }
+                                        
+                                        if (isUnwanted) {
+                                            var $btnGroup = $btn.closest('.btn-group');
+                                            if ($btnGroup.length > 0) {
+                                                $btnGroup.remove();
+                                            } else {
+                                                $btn.remove();
+                                            }
+                                        }
+                                    });
+                                    
+                                    // Also remove by direct selectors
+                                    $toolbar.find('button[data-event*="link"], button[data-event*="image"], button[data-event*="picture"], button[data-event*="video"], button[data-event*="table"], button[data-event*="fullscreen"], button[data-event*="codeview"], button[data-event*="help"], button[data-event*="color"], button[data-event*="fontname"]').closest('.btn-group').remove();
+                                }
+                                
+                                // Multiple aggressive attempts
+                                setTimeout(removeUnwantedButtons, 50);
+                                setTimeout(removeUnwantedButtons, 150);
+                                setTimeout(removeUnwantedButtons, 300);
+                                setTimeout(removeUnwantedButtons, 500);
+                                setTimeout(removeUnwantedButtons, 1000);
+                                setTimeout(removeUnwantedButtons, 2000);
+                                
+                                // Continuous monitoring with MutationObserver
+                                setTimeout(function() {
+                                    var $editor = $description.next('.note-editor');
+                                    if ($editor.length > 0) {
+                                        var observer = new MutationObserver(function() {
+                                            removeUnwantedButtons();
+                                        });
+                                        observer.observe($editor[0], {
+                                            childList: true,
+                                            subtree: true,
+                                            attributes: true
+                                        });
+                                    }
+                                }, 100);
+                            }
+                        },
+                        placeholder: 'Tulis deskripsi di sini...',
+                        lang: 'id-ID',
+                        fontNames: [
+                            'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 
+                            'Georgia', 'Helvetica', 'Impact', 'Lucida Console', 
+                            'Lucida Sans Unicode', 'Palatino Linotype', 'Tahoma', 
+                            'Times New Roman', 'Trebuchet MS', 'Verdana',
+                            'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins',
+                            'Raleway', 'Ubuntu', 'Playfair Display', 'Merriweather',
+                            'Oswald', 'Source Sans Pro', 'PT Sans', 'Lora'
+                        ],
+                        fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '32', '36', '48', '72'],
+                        colors: [
+                            ['#000000', 'Hitam'],
+                            ['#434343', 'Abu-abu Gelap'],
+                            ['#666666', 'Abu-abu'],
+                            ['#999999', 'Abu-abu Terang'],
+                            ['#b7b7b7', 'Abu-abu Muda'],
+                            ['#cccccc', 'Abu-abu Sangat Muda'],
+                            ['#d9d9d9', 'Abu-abu Pucat'],
+                            ['#efefef', 'Abu-abu Sangat Pucat'],
+                            ['#f3f3f3', 'Abu-abu Putih'],
+                            ['#ffffff', 'Putih'],
+                            ['#980000', 'Merah Gelap'],
+                            ['#ff0000', 'Merah'],
+                            ['#ff9900', 'Jingga'],
+                            ['#ffff00', 'Kuning'],
+                            ['#00ff00', 'Hijau'],
+                            ['#00ffff', 'Cyan'],
+                            ['#4a86e8', 'Biru'],
+                            ['#0000ff', 'Biru Gelap'],
+                            ['#9900ff', 'Ungu'],
+                            ['#ff00ff', 'Magenta'],
+                            ['#e6b8af', 'Merah Muda'],
+                            ['#f4cccc', 'Merah Muda Terang'],
+                            ['#fce5cd', 'Krem'],
+                            ['#fff2cc', 'Kuning Muda'],
+                            ['#d9ead3', 'Hijau Muda'],
+                            ['#d0e0e3', 'Biru Muda'],
+                            ['#c9daf8', 'Biru Langit'],
+                            ['#cfe2f3', 'Biru Pucat'],
+                            ['#d9d2e9', 'Ungu Muda'],
+                            ['#ead1dc', 'Pink'],
+                            ['#ff6b6b', 'Merah Terang'],
+                            ['#4ecdc4', 'Turquoise'],
+                            ['#45b7d1', 'Biru Terang'],
+                            ['#f7b731', 'Kuning Emas'],
+                            ['#5f27cd', 'Ungu Gelap'],
+                            ['#00d2d3', 'Cyan Terang'],
+                            ['#ff9ff3', 'Pink Terang'],
+                            ['#54a0ff', 'Biru Langit Terang'],
+                            ['#5f27cd', 'Ungu'],
+                            ['#c44569', 'Merah Muda Gelap']
+                        ]
+                    });
+                    console.log('Summernote initialized untuk #description');
+                }
+            }
+            
+            // Wait a bit to ensure all scripts are loaded
+            setTimeout(initSummernote, 200);
+        });
+    </script>
     <?php endif; ?>
 </body>
 </html>
