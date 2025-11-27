@@ -8,7 +8,7 @@ if ($id <= 0) {
     exit;
 }
 
-$query = $mysqli->prepare('SELECT id, title, summary, image_url, article_url, published_at, created_at, updated_at FROM news_items WHERE id = ?');
+$query = $mysqli->prepare('SELECT n.id, n.title, n.summary, n.image_url, n.article_url, n.published_at, n.created_at, n.updated_at, n.created_by, u.role, u.full_name, u.username FROM news_items n LEFT JOIN users u ON n.created_by = u.id WHERE n.id = ?');
 $query->bind_param('i', $id);
 $query->execute();
 $result = $query->get_result();
@@ -65,8 +65,11 @@ function newsImageSrc(?string $path): string {
     return 'https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80';
 }
 
-$uploaderRole = 'admin';
-$uploaderName = 'Admin';
+// Get uploader info from database
+$uploaderRole = $news['role'] ?? 'admin';
+$uploaderName = !empty($news['full_name']) ? $news['full_name'] : ($news['username'] ?? 'Admin');
+// Capitalize first letter of role for display
+$uploaderRoleDisplay = ucfirst($uploaderRole);
 $newsDate = !empty($news['published_at']) ? $news['published_at'] : $news['created_at'];
 
 $pageTitle = htmlspecialchars($news['title']);
@@ -576,11 +579,11 @@ $pageTitle = htmlspecialchars($news['title']);
                             <i class="fas fa-calendar-alt"></i>
                             <span><?= date('d M Y', strtotime($newsDate)) ?></span>
                         </div>
-                        <div class="news-detail-uploader" title="Upload oleh <?= htmlspecialchars($uploaderName) ?>">
+                        <div class="news-detail-uploader" title="Upload oleh <?= htmlspecialchars($uploaderName) ?> (<?= htmlspecialchars($uploaderRoleDisplay) ?>)">
                             <div class="news-detail-uploader-icon <?= $uploaderRole ?>">
                                 <i class="fas fa-<?= $uploaderRole === 'admin' ? 'user-shield' : ($uploaderRole === 'mahasiswa' ? 'user-graduate' : 'chalkboard-teacher') ?>"></i>
                             </div>
-                            <span><?= htmlspecialchars($uploaderName) ?></span>
+                            <span><?= htmlspecialchars($uploaderRoleDisplay) ?></span>
                         </div>
                         <?php if ($news['updated_at'] && $news['updated_at'] !== $news['created_at']): ?>
                             <div class="news-meta-item" title="Terakhir Diperbarui">
@@ -592,17 +595,9 @@ $pageTitle = htmlspecialchars($news['title']);
                     
                     <div class="news-detail-content">
                         <?php if (!empty($news['summary'])): ?>
-                            <?php 
-                            $summary = $news['summary'];
-                            // Split by newlines and create paragraphs
-                            $paragraphs = explode("\n", $summary);
-                            foreach ($paragraphs as $index => $paragraph) {
-                                $paragraph = trim($paragraph);
-                                if (!empty($paragraph)) {
-                                    echo '<p>' . nl2br(htmlspecialchars($paragraph)) . '</p>';
-                                }
-                            }
-                            ?>
+                            <div class="news-detail-summary">
+                                <?= $news['summary'] ?>
+                            </div>
                         <?php else: ?>
                             <p>Konten berita akan segera ditambahkan.</p>
                         <?php endif; ?>

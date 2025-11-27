@@ -207,35 +207,38 @@ document.addEventListener('DOMContentLoaded', function() {
         let currentIndex = 0;
         const totalProjects = projectCards.length;
         
-        // Set first card as active on load
-        if (projectCards.length > 0) {
-            projectCards[0].classList.add('active');
-        }
-        
         function updateSlider() {
-            // Remove active class from all cards
-            projectCards.forEach(card => {
-                card.classList.remove('active');
+            // Add smooth animation by first removing active class from all
+            projectCards.forEach((card, index) => {
+                if (index === currentIndex) {
+                    // Active card - will be centered and clear
+                    setTimeout(() => {
+                        card.classList.add('active');
+                    }, 50);
+                } else {
+                    // Non-active cards - blurred and scaled down
+                    card.classList.remove('active');
+                }
             });
             
-            // Add fade out animation to current card
-            if (projectCards[currentIndex]) {
-                projectCards[currentIndex].style.opacity = '0';
-                projectCards[currentIndex].style.transform = 'scale(0.95) translateY(20px)';
-            }
+            // Perfect centering calculation - only show active card
+            const wrapper = projectsSlider.parentElement;
+            const wrapperWidth = wrapper.offsetWidth;
+            const cardWidth = 500; // Fixed card width in pixels
             
-            // Update slider position
-            const translateX = -currentIndex * 100;
-            projectsSlider.style.transform = `translateX(${translateX}%)`;
+            // Calculate the exact position to center the active card
+            // Formula: center = (wrapperWidth - cardWidth) / 2
+            const centerPosition = (wrapperWidth - cardWidth) / 2;
             
-            // Add active class and fade in animation to new card
-            setTimeout(() => {
-                if (projectCards[currentIndex]) {
-                    projectCards[currentIndex].classList.add('active');
-                    projectCards[currentIndex].style.opacity = '1';
-                    projectCards[currentIndex].style.transform = 'scale(1) translateY(0)';
-                }
-            }, 50);
+            // Calculate translateX in pixels to center the active card
+            const cardPosition = currentIndex * cardWidth;
+            const translateXPixels = centerPosition - cardPosition;
+            
+            // Convert to percentage for smooth CSS transition
+            const sliderWidth = projectsSlider.offsetWidth;
+            const translateXPercent = (translateXPixels / sliderWidth) * 100;
+            
+            projectsSlider.style.transform = `translateX(${translateXPercent}%)`;
             
             // Disable/enable prev button
             if (currentIndex <= 0) {

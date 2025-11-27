@@ -7,7 +7,14 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Hanya mahasiswa yang bisa akses
+if (($_SESSION['role'] ?? '') !== 'mahasiswa') {
+    header('Location: /crims/login/');
+    exit;
+}
+
 $activePage = 'achievements';
+$userId = $_SESSION['user_id'];
 $uploadDir = __DIR__ . '/../uploads/achievements/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0775, true);
@@ -65,18 +72,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if ($action === 'delete') {
             if ($id > 0) {
-                $stmt = $mysqli->prepare('SELECT image_url FROM achievement_items WHERE id = ?');
+                // Cek ownership
+                $stmt = $mysqli->prepare('SELECT image_url, created_by FROM achievement_items WHERE id = ?');
                 $stmt->bind_param('i', $id);
                 $stmt->execute();
                 $row = $stmt->get_result()->fetch_assoc();
                 $stmt->close();
 
-                if ($row && $row['image_url']) {
+                if (!$row) {
+                    throw new RuntimeException('Prestasi tidak ditemukan.');
+                }
+
+                if ((int) $row['created_by'] !== $userId) {
+                    throw new RuntimeException('Anda tidak memiliki izin untuk menghapus prestasi ini.');
+                }
+
+                if ($row['image_url']) {
                     removeAchievementImage($row['image_url']);
                 }
 
-                $stmt = $mysqli->prepare('DELETE FROM achievement_items WHERE id = ?');
-                $stmt->bind_param('i', $id);
+                $stmt = $mysqli->prepare('DELETE FROM achievement_items WHERE id = ? AND created_by = ?');
+                $stmt->bind_param('ii', $id, $userId);
                 $stmt->execute();
                 $stmt->close();
             }
@@ -101,15 +117,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($id > 0) {
-                $stmt = $mysqli->prepare('UPDATE achievement_items SET title = ?, description = ?, icon_class = ?, image_url = ?, sort_order = ? WHERE id = ?');
-                $stmt->bind_param('ssssii', $title, $description, $iconClass, $imagePath, $sortOrder, $id);
+                // Cek ownership sebelum update
+                $stmt = $mysqli->prepare('SELECT created_by FROM achievement_items WHERE id = ?');
+                $stmt->bind_param('i', $id);
+                $stmt->execute();
+                $row = $stmt->get_result()->fetch_assoc();
+                $stmt->close();
+
+                if (!$row) {
+                    throw new RuntimeException('Prestasi tidak ditemukan.');
+                }
+
+                if ((int) $row['created_by'] !== $userId) {
+                    throw new RuntimeException('Anda tidak memiliki izin untuk mengedit prestasi ini.');
+                }
+
+                $stmt = $mysqli->prepare('UPDATE achievement_items SET title = ?, description = ?, icon_class = ?, image_url = ?, sort_order = ? WHERE id = ? AND created_by = ?');
+                $stmt->bind_param('ssssiii', $title, $description, $iconClass, $imagePath, $sortOrder, $id, $userId);
                 $stmt->execute();
                 $stmt->close();
                 $_SESSION['flash_success'] = 'Prestasi berhasil diperbarui.';
             } else {
-                $adminUserId = $_SESSION['user_id'] ?? null;
                 $stmt = $mysqli->prepare('INSERT INTO achievement_items (title, description, icon_class, image_url, sort_order, created_by) VALUES (?, ?, ?, ?, ?, ?)');
-                $stmt->bind_param('ssssii', $title, $description, $iconClass, $imagePath, $sortOrder, $adminUserId);
+                $stmt->bind_param('ssssii', $title, $description, $iconClass, $imagePath, $sortOrder, $userId);
                 $stmt->execute();
                 $stmt->close();
                 $_SESSION['flash_success'] = 'Prestasi baru berhasil ditambahkan.';
@@ -120,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['form_data'] = $_POST;
     }
 
-    $redirect = '/crims/admin/achievements.php';
+    $redirect = '/crims/mahasiswa/achievements.php';
     if ($action !== 'delete' && $id > 0 && empty($_SESSION['flash_error'])) {
         $redirect .= '?edit=' . $id;
     }
@@ -129,21 +159,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $achievements = [];
-$result = $mysqli->query('SELECT a.*, u.role, u.full_name, u.username FROM achievement_items a LEFT JOIN users u ON a.created_by = u.id ORDER BY a.sort_order ASC, a.created_at DESC');
+$stmt = $mysqli->prepare('SELECT a.*, u.role, u.full_name, u.username FROM achievement_items a LEFT JOIN users u ON a.created_by = u.id WHERE a.created_by = ? ORDER BY a.sort_order ASC, a.created_at DESC');
+$stmt->bind_param('i', $userId);
+$stmt->execute();
+$result = $stmt->get_result();
 if ($result) {
     $achievements = $result->fetch_all(MYSQLI_ASSOC);
     $result->free();
 }
+$stmt->close();
 
 $editingAchievement = null;
 if (isset($_GET['edit'])) {
     $editId = (int) $_GET['edit'];
-    foreach ($achievements as $achievement) {
-        if ((int) $achievement['id'] === $editId) {
-            $editingAchievement = $achievement;
-            break;
-        }
-    }
+    // Cek ownership
+    $stmt = $mysqli->prepare('SELECT * FROM achievement_items WHERE id = ? AND created_by = ?');
+    $stmt->bind_param('ii', $editId, $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $editingAchievement = $result->fetch_assoc();
+    $stmt->close();
 }
 
 $formData = $editingAchievement ?? ($_SESSION['form_data'] ?? null);
@@ -153,7 +188,7 @@ $successMessage = $_SESSION['flash_success'] ?? null;
 $errorMessage = $_SESSION['flash_error'] ?? null;
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
-require_once __DIR__ . '/admin_layout.php';
+require_once __DIR__ . '/mahasiswa_layout.php';
 
 ob_start();
 ?>
@@ -170,14 +205,7 @@ ob_start();
         input:focus, select:focus, textarea:focus{outline:none;border-color:#1e5ba8;box-shadow:0 0 0 3px rgba(30,91,168,0.15)}
         .icon-preview{display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:12px;margin-top:8px}
         .icon-preview i{font-size:32px;color:#1e5ba8}
-        .note-editor.note-frame{border:2px solid #dce4f3;border-radius:12px;overflow:hidden;margin-top:8px}
-        .note-editor.note-frame .note-toolbar{background:#f8f9fa;border-bottom:1px solid #e5eaf3;padding:8px}
-        .note-editor.note-frame .note-editing-area .note-editable{min-height:250px;padding:15px;font-size:14px;line-height:1.6}
-        .note-editor.note-frame .note-editing-area .note-editable:focus{outline:none}
         .btn{border:none;border-radius:12px;padding:12px 20px;font-weight:600;color:#fff;background:#1e5ba8;cursor:pointer;transition:0.2s;align-self:flex-start}
-        
-        /* Summernote CSS Import */
-        @import url('https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css');
         .btn.secondary{background:#f1f5f9;color:#1e5ba8}
         .btn.danger{background:#d62828}
         .btn:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(30,91,168,0.2)}
@@ -225,8 +253,7 @@ ob_start();
 
                 <div class="form-group">
                     <label for="description">Deskripsi</label>
-                    <textarea id="description" name="description" class="summernote-editor" placeholder="Tulis deskripsi prestasi di sini..."><?= $formData['description'] ?? '' ?></textarea>
-                    <small style="color:#6b7a90;margin-top:4px;font-size:12px">Gunakan toolbar di atas untuk memformat teks (Bold, Italic, Underline, dll)</small>
+                    <textarea id="description" name="description" placeholder="Deskripsi singkat tentang prestasi..."><?= htmlspecialchars($formData['description'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-row">
@@ -284,7 +311,7 @@ ob_start();
                                 <i class="<?= htmlspecialchars($achievement['icon_class']) ?>"></i>
                                 <h4><?= htmlspecialchars($achievement['title']) ?></h4>
                                 <?php if (!empty($achievement['description'])): ?>
-                                    <div><?= $achievement['description'] ?></div>
+                                    <p><?= htmlspecialchars($achievement['description']) ?></p>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </div>
@@ -307,7 +334,7 @@ ob_start();
                                 <td><i class="<?= htmlspecialchars($achievement['icon_class']) ?>" style="font-size:24px;color:#1e5ba8"></i></td>
                                 <td><strong><?= htmlspecialchars($achievement['title']) ?></strong></td>
                                 <td><?= htmlspecialchars($achievement['sort_order']) ?></td>
-                                <td><?= !empty($achievement['role']) ? ucfirst($achievement['role']) : 'Admin' ?></td>
+                                <td><?= !empty($achievement['role']) ? ucfirst($achievement['role']) : ucfirst($_SESSION['role'] ?? 'mahasiswa') ?></td>
                                 <td><?= date('d M Y', strtotime($achievement['created_at'])) ?></td>
                                 <td>
                                     <div class="actions">
@@ -326,92 +353,17 @@ ob_start();
             <?php endif; ?>
         </div>
     </div>
-    
     <script>
         // Live icon preview
-        (function() {
-            var iconClassInput = document.getElementById('icon_class');
-            if (iconClassInput) {
-                iconClassInput.addEventListener('input', function(e) {
-                    const preview = document.getElementById('iconPreview');
-                    if (preview) {
-                        preview.className = e.target.value || 'fas fa-trophy';
-                    }
-                });
+        document.getElementById('icon_class')?.addEventListener('input', function(e) {
+            const preview = document.getElementById('iconPreview');
+            if (preview) {
+                preview.className = e.target.value || 'fas fa-trophy';
             }
-        })();
-        
-        // Initialize Summernote - tunggu sampai semua script dimuat
-        (function() {
-            function initSummernote() {
-                // Pastikan jQuery sudah dimuat
-                if (typeof jQuery === 'undefined' || typeof window.$ === 'undefined') {
-                    console.log('Menunggu jQuery...');
-                    setTimeout(initSummernote, 100);
-                    return;
-                }
-                
-                var $ = jQuery;
-                
-                // Pastikan Summernote sudah dimuat
-                if (typeof $.fn.summernote === 'undefined') {
-                    console.log('Menunggu Summernote...');
-                    setTimeout(initSummernote, 100);
-                    return;
-                }
-                
-                // Pastikan element ada
-                var $desc = $('#description');
-                if ($desc.length === 0) {
-                    console.log('Element #description belum ditemukan...');
-                    setTimeout(initSummernote, 100);
-                    return;
-                }
-                
-                // Cek apakah sudah diinisialisasi
-                if ($desc.summernote('isEmpty') !== undefined) {
-                    console.log('Summernote sudah diinisialisasi');
-                    return;
-                }
-                
-                // Inisialisasi Summernote
-                try {
-                    $desc.summernote({
-                        height: 300,
-                        toolbar: [
-                            ['style', ['style']],
-                            ['font', ['bold', 'italic', 'underline', 'clear']],
-                            ['fontname', ['fontname']],
-                            ['fontsize', ['fontsize']],
-                            ['color', ['color']],
-                            ['para', ['ul', 'ol', 'paragraph']],
-                            ['table', ['table']],
-                            ['insert', ['link', 'picture', 'video']],
-                            ['view', ['fullscreen', 'codeview', 'help']]
-                        ],
-                        placeholder: 'Tulis deskripsi prestasi di sini...',
-                        lang: 'id-ID',
-                        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana'],
-                        fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '36', '48']
-                    });
-                    console.log('Summernote berhasil diinisialisasi!');
-                } catch (e) {
-                    console.error('Error inisialisasi Summernote:', e);
-                }
-            }
-            
-            // Jalankan setelah DOM ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    setTimeout(initSummernote, 200);
-                });
-            } else {
-                setTimeout(initSummernote, 200);
-            }
-        })();
+        });
     </script>
 <?php
 $content = ob_get_clean();
-echo renderAdminLayout($activePage, 'Kelola Prestasi', $content);
+renderMahasiswaLayout($activePage, 'Kelola Prestasi', $content);
 ?>
 

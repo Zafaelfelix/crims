@@ -676,6 +676,39 @@ a:hover {
     border-radius: 2px;
 }
 
+.featured-projects .section-title {
+    display: inline-block;
+    padding-bottom: 15px;
+    cursor: default;
+}
+
+.featured-projects .section-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 4px;
+    border-radius: 50px;
+    background: linear-gradient(120deg, #e74c3c, #1e5ba8, #f39c12);
+    background-size: 200% 100%;
+    opacity: 0;
+    transition: width 0.4s ease, opacity 0.4s ease;
+}
+
+.featured-projects .section-title:hover::after {
+    width: 140px;
+    opacity: 1;
+    animation: sectionLineSweep 2s linear infinite;
+}
+
+@keyframes sectionLineSweep {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
 .section-subtitle {
     font-size: 1rem;
     color: #555;
@@ -715,37 +748,71 @@ a:hover {
 /* Projects Slider */
 .projects-slider-wrapper {
     position: relative;
-    overflow: visible;
+    overflow: hidden;
     margin: 0 auto;
     max-width: 1200px;
-    padding: 0 100px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 
 .projects-slider {
     display: flex;
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    align-items: center;
+    justify-content: flex-start;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     will-change: transform;
+    width: 100%;
 }
 
 .projects-slider .project-card {
-    min-width: 100%;
+    min-width: 500px;
+    width: 500px;
+    max-width: 500px;
     flex-shrink: 0;
-    max-width: 480px;
-    margin: 0 auto;
+    margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: visible;
     padding: 20px;
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(20px) scale(0.9);
     animation: slideInCard 0.4s ease-out forwards;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: blur(10px);
+    pointer-events: none;
+    position: relative;
+    box-sizing: border-box;
 }
 
 .projects-slider .project-card.active {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+    pointer-events: auto;
+    z-index: 2;
+    animation: cardActivate 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cardActivate {
+    0% {
+        opacity: 0.5;
+        transform: translateY(20px) scale(0.9);
+        filter: blur(10px);
+    }
+    60% {
+        transform: translateY(-5px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
 }
 
 @keyframes slideInCard {
@@ -760,8 +827,8 @@ a:hover {
 }
 
 .projects-slider .project-image {
-    width: 95%;
-    max-width: 440px;
+    width: 100%;
+    max-width: 480px;
     margin: 0 auto 20px;
     border-radius: 15px;
     overflow: hidden;
@@ -829,18 +896,39 @@ a:hover {
     font-size: 0.95rem;
     margin-bottom: 18px;
     line-height: 1.6;
+    color: #64748b;
+    transition: color 0.3s ease;
+    margin: 0;
+}
+
+.projects-slider .project-card:hover .project-content p {
+    color: #475569;
 }
 
 .projects-slider .project-content h3 {
     font-size: 1.25rem;
     margin-bottom: 12px;
     line-height: 1.4;
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+.projects-slider .project-card:hover .project-content h3 {
+    color: #1e5ba8;
 }
 
 .projects-slider .project-content .project-category {
     font-size: 0.75rem;
     padding: 4px 12px;
     margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.projects-slider .project-card:hover .project-content .project-category {
+    background: linear-gradient(135deg, #1e5ba8, #2980b9);
+    transform: scale(1.05);
 }
 
 .projects-slider .project-content .btn-link {
@@ -948,6 +1036,10 @@ a:hover {
     transition: transform 0.65s cubic-bezier(0.19, 1, 0.22, 1),
                 box-shadow 0.5s ease, border-color 0.5s ease;
     backface-visibility: hidden;
+}
+
+.project-card[onclick] {
+    cursor: pointer;
 }
 
 .project-card::before,
@@ -2645,32 +2737,54 @@ a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1e5ba8 0%, #2980b9 100%);
+    background: linear-gradient(135deg, #1e5ba8 0%, #2980b9 50%, #1e5ba8 100%);
+    background-size: 200% 200%;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
 }
 
 .page-loader.hidden {
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
 }
 
 .loader-content {
     text-align: center;
     color: white;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .loader-spinner {
-    width: 60px;
-    height: 60px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
+    width: 70px;
+    height: 70px;
+    border: 5px solid rgba(255, 255, 255, 0.2);
     border-top-color: white;
+    border-right-color: white;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
+    margin: 0 auto 25px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
 }
 
 @keyframes spin {
@@ -2678,15 +2792,41 @@ a:hover {
 }
 
 .loader-text {
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: 1px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 3px;
     animation: pulse 1.5s ease-in-out infinite;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-family: 'Poppins', sans-serif;
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.loader-subtext {
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 10px;
+    opacity: 0.9;
+    letter-spacing: 1px;
+    animation: fadeIn 1s ease-out 0.3s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.9;
+    }
 }
 
 /* ========== Scroll Animations ========== */

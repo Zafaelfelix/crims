@@ -7,7 +7,14 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Hanya dosen yang bisa akses
+if (($_SESSION['role'] ?? '') !== 'dosen') {
+    header('Location: /crims/login/');
+    exit;
+}
+
 $activePage = 'news';
+$userId = $_SESSION['user_id'];
 $uploadDir = __DIR__ . '/../uploads/news/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0775, true);
@@ -149,18 +156,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } elseif ($action === 'delete') {
             if ($id > 0) {
-                $stmt = $mysqli->prepare('SELECT image_url FROM news_items WHERE id = ?');
+                // Cek ownership
+                $stmt = $mysqli->prepare('SELECT image_url, created_by FROM news_items WHERE id = ?');
                 $stmt->bind_param('i', $id);
                 $stmt->execute();
                 $row = $stmt->get_result()->fetch_assoc();
                 $stmt->close();
 
-                if ($row && $row['image_url']) {
+                if (!$row) {
+                    throw new RuntimeException('Berita tidak ditemukan.');
+                }
+
+                if ((int) $row['created_by'] !== $userId) {
+                    throw new RuntimeException('Anda tidak memiliki izin untuk menghapus berita ini.');
+                }
+
+                if ($row['image_url']) {
                     removeNewsImage($row['image_url']);
                 }
 
-                $stmt = $mysqli->prepare('DELETE FROM news_items WHERE id = ?');
-                $stmt->bind_param('i', $id);
+                $stmt = $mysqli->prepare('DELETE FROM news_items WHERE id = ? AND created_by = ?');
+                $stmt->bind_param('ii', $id, $userId);
                 $stmt->execute();
                 $stmt->close();
             }
@@ -190,12 +206,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $publishedDate = $publishedAt ? $publishedAt : null;
 
             if ($id > 0) {
+                // Cek ownership sebelum update
+                $stmt = $mysqli->prepare('SELECT created_by FROM news_items WHERE id = ?');
+                $stmt->bind_param('i', $id);
+                $stmt->execute();
+                $row = $stmt->get_result()->fetch_assoc();
+                $stmt->close();
+
+                if (!$row) {
+                    throw new RuntimeException('Berita tidak ditemukan.');
+                }
+
+                if ((int) $row['created_by'] !== $userId) {
+                    throw new RuntimeException('Anda tidak memiliki izin untuk mengedit berita ini.');
+                }
+
                 // Update existing news
-                $stmt = $mysqli->prepare('UPDATE news_items SET title = ?, summary = ?, image_url = ?, article_url = ?, published_at = ?, sort_order = ? WHERE id = ?');
+                $stmt = $mysqli->prepare('UPDATE news_items SET title = ?, summary = ?, image_url = ?, article_url = ?, published_at = ?, sort_order = ? WHERE id = ? AND created_by = ?');
                 if (!$stmt) {
                     throw new RuntimeException('Gagal menyiapkan query update: ' . $mysqli->error);
                 }
-                $stmt->bind_param('sssssii', $title, $summary, $imagePath, $articleUrl, $publishedDate, $sortOrder, $id);
+                $stmt->bind_param('sssssiii', $title, $summary, $imagePath, $articleUrl, $publishedDate, $sortOrder, $id, $userId);
                 if (!$stmt->execute()) {
                     throw new RuntimeException('Gagal memperbarui berita: ' . $stmt->error);
                 }
@@ -203,13 +234,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->close();
                 $_SESSION['flash_success'] = 'Berita berhasil diperbarui.';
             } else {
-                // Insert new news
-                $adminUserId = $_SESSION['user_id'] ?? null;
+                // Insert new news dengan created_by
                 $stmt = $mysqli->prepare('INSERT INTO news_items (title, summary, image_url, article_url, published_at, sort_order, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)');
                 if (!$stmt) {
                     throw new RuntimeException('Gagal menyiapkan query insert: ' . $mysqli->error);
                 }
-                $stmt->bind_param('sssssii', $title, $summary, $imagePath, $articleUrl, $publishedDate, $sortOrder, $adminUserId);
+                $stmt->bind_param('sssssii', $title, $summary, $imagePath, $articleUrl, $publishedDate, $sortOrder, $userId);
                 if (!$stmt->execute()) {
                     throw new RuntimeException('Gagal menambahkan berita: ' . $stmt->error);
                 }
@@ -248,7 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log('News save error: ' . $e->getMessage());
     }
 
-    $redirect = '/crims/admin/news.php';
+    $redirect = '/crims/dosen/news.php';
     if ($action !== 'delete' && $id > 0 && empty($_SESSION['flash_error'])) {
         $redirect .= '?edit=' . $id;
     } elseif ($action !== 'delete' && empty($_SESSION['flash_error']) && isset($newsId) && $newsId > 0) {
@@ -260,22 +290,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $newsItems = [];
-$result = $mysqli->query('SELECT * FROM news_items ORDER BY sort_order ASC, published_at DESC, created_at DESC');
+$stmt = $mysqli->prepare('SELECT * FROM news_items WHERE created_by = ? ORDER BY sort_order ASC, published_at DESC, created_at DESC');
+$stmt->bind_param('i', $userId);
+$stmt->execute();
+$result = $stmt->get_result();
 if ($result) {
     $newsItems = $result->fetch_all(MYSQLI_ASSOC);
     $result->free();
 }
+$stmt->close();
 
 $editingNews = null;
 $newsPhotos = [];
 if (isset($_GET['edit'])) {
     $editId = (int) $_GET['edit'];
-    foreach ($newsItems as $news) {
-        if ((int) $news['id'] === $editId) {
-            $editingNews = $news;
-            break;
-        }
-    }
+    // Cek ownership
+    $stmt = $mysqli->prepare('SELECT * FROM news_items WHERE id = ? AND created_by = ?');
+    $stmt->bind_param('ii', $editId, $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $editingNews = $result->fetch_assoc();
+    $stmt->close();
     
     // Get photos for this news
     if ($editingNews) {
@@ -305,7 +340,7 @@ $successMessage = $_SESSION['flash_success'] ?? null;
 $errorMessage = $_SESSION['flash_error'] ?? null;
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
-require_once __DIR__ . '/admin_layout.php';
+require_once __DIR__ . '/dosen_layout.php';
 
 ob_start();
 ?>
@@ -319,10 +354,6 @@ ob_start();
         label{font-weight:600;color:#1e5ba8;margin-bottom:8px}
         input, select, textarea{padding:12px;border:2px solid #dce4f3;border-radius:12px;font-size:15px;background:#f9fbff;transition:0.2s}
         textarea{min-height:100px;resize:vertical}
-        .note-editor.note-frame{border:2px solid #dce4f3;border-radius:12px;overflow:hidden}
-        .note-editor.note-frame .note-toolbar{background:#f8f9fa;border-bottom:1px solid #e5eaf3;padding:8px}
-        .note-editor.note-frame .note-editing-area .note-editable{min-height:250px;padding:15px;font-size:14px;line-height:1.6}
-        .note-editor.note-frame .note-editing-area .note-editable:focus{outline:none}
         input:focus, select:focus, textarea:focus{outline:none;border-color:#1e5ba8;box-shadow:0 0 0 3px rgba(30,91,168,0.15)}
         .btn{border:none;border-radius:12px;padding:12px 20px;font-weight:600;color:#fff;background:#1e5ba8;cursor:pointer;transition:0.2s;align-self:flex-start}
         .btn.secondary{background:#f1f5f9;color:#1e5ba8}
@@ -369,8 +400,7 @@ ob_start();
 
                 <div class="form-group">
                     <label for="summary">Ringkasan Berita</label>
-                    <textarea id="summary" name="summary" placeholder="Ringkasan singkat berita..."><?= $formData['summary'] ?? '' ?></textarea>
-                    <small style="color:#6b7a90;margin-top:4px;font-size:12px">Gunakan toolbar di atas untuk memformat teks (Bold, Italic, Underline, dll)</small>
+                    <textarea id="summary" name="summary" placeholder="Ringkasan singkat berita..."><?= htmlspecialchars($formData['summary'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-row">
@@ -449,7 +479,7 @@ ob_start();
                 <div style="display:flex;gap:12px">
                     <button type="submit" class="btn" id="submitBtn"><?= $editingNews ? 'Simpan Perubahan' : 'Tambah Berita' ?></button>
                     <?php if ($editingNews): ?>
-                        <a href="/crims/admin/news.php" class="btn secondary">Batal</a>
+                        <a href="/crims/dosen/news.php" class="btn secondary">Batal</a>
                     <?php endif; ?>
                 </div>
             </form>
@@ -506,37 +536,6 @@ ob_start();
                 form.submit();
             }
             </script>
-            
-            <!-- Summernote CSS -->
-            <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
-            
-            <!-- Summernote JS -->
-            <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
-            
-            <script>
-                // Initialize Summernote
-                $(document).ready(function() {
-                    $('#summary').summernote({
-                        height: 300,
-                        toolbar: [
-                            ['style', ['style']],
-                            ['font', ['bold', 'italic', 'underline', 'clear']],
-                            ['fontname', ['fontname']],
-                            ['fontsize', ['fontsize']],
-                            ['color', ['color']],
-                            ['para', ['ul', 'ol', 'paragraph']],
-                            ['table', ['table']],
-                            ['insert', ['link', 'picture', 'video']],
-                            ['view', ['fullscreen', 'codeview', 'help']]
-                        ],
-                        placeholder: 'Tulis ringkasan berita di sini...',
-                        lang: 'id-ID',
-                        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana'],
-                        fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '36', '48']
-                    });
-                });
-            </script>
         </div>
 
         <div class="card">
@@ -592,7 +591,7 @@ ob_start();
     </div>
 <?php
 $content = ob_get_clean();
-echo renderAdminLayout($activePage, 'Kelola Berita', $content);
+renderDosenLayout($activePage, 'Kelola Berita', $content);
 ?>
 
 

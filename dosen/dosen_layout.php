@@ -1,21 +1,19 @@
 <?php
-if (!function_exists('renderAdminLayout')) {
-    function renderAdminLayout($activePage = 'dashboard', $pageTitle = 'Admin Panel', $content = '') {
+if (!function_exists('renderDosenLayout')) {
+    function renderDosenLayout($activePage = 'dashboard', $pageTitle = 'Dosen Panel', $content = '') {
+        // Warna tema dosen: Hijau (#10b981, #059669)
+        $primaryColor = '#10b981';
+        $primaryDark = '#059669';
+        $primaryLight = '#34d399';
         ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($pageTitle) ?> - AdminCrims</title>
+    <title><?= htmlspecialchars($pageTitle) ?> - Dashboard Dosen</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Summernote CSS (hanya untuk halaman yang membutuhkan) -->
-    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($content, 'id="description"') !== false): ?>
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
-    <?php endif; ?>
-    <!-- jQuery (required for Summernote and other scripts) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -38,7 +36,7 @@ if (!function_exists('renderAdminLayout')) {
             min-height: 100vh;
         }
         
-        /* Sidebar */
+        /* Sidebar - Dosen Theme (Hijau) */
         .admin-sidebar {
             width: 200px;
             background: linear-gradient(180deg, #1d2327 0%, #23282d 100%);
@@ -66,13 +64,13 @@ if (!function_exists('renderAdminLayout')) {
         .admin-sidebar-logo {
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+            background: linear-gradient(135deg, <?= $primaryColor ?> 0%, <?= $primaryDark ?> 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(34, 113, 177, 0.4), 0 2px 4px rgba(34, 113, 177, 0.3), inset 0 1px 0 rgba(255,255,255,.3);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4), 0 2px 4px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,.3);
             position: relative;
             overflow: hidden;
         }
@@ -139,17 +137,17 @@ if (!function_exists('renderAdminLayout')) {
             top: 0;
             bottom: 0;
             width: 4px;
-            background: linear-gradient(180deg, #2271b1 0%, #135e96 100%);
+            background: linear-gradient(180deg, <?= $primaryColor ?> 0%, <?= $primaryDark ?> 100%);
             border-radius: 0 4px 4px 0;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
         
         .admin-sidebar-menu a:hover {
-            background: linear-gradient(90deg, rgba(34, 113, 177, 0.15) 0%, rgba(34, 113, 177, 0.05) 100%);
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
             color: #fff;
             transform: translateX(4px);
-            box-shadow: -2px 0 8px rgba(34, 113, 177, 0.2);
+            box-shadow: -2px 0 8px rgba(16, 185, 129, 0.2);
         }
         
         .admin-sidebar-menu a:hover::before {
@@ -157,9 +155,9 @@ if (!function_exists('renderAdminLayout')) {
         }
         
         .admin-sidebar-menu a.active {
-            background: linear-gradient(90deg, rgba(34, 113, 177, 0.25) 0%, rgba(34, 113, 177, 0.1) 100%);
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.1) 100%);
             color: #fff;
-            box-shadow: -2px 0 12px rgba(34, 113, 177, 0.3), inset 0 0 20px rgba(34, 113, 177, 0.1);
+            box-shadow: -2px 0 12px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(16, 185, 129, 0.1);
         }
         
         .admin-sidebar-menu a.active::before {
@@ -181,57 +179,6 @@ if (!function_exists('renderAdminLayout')) {
             background: transparent;
             color: #b4b9be;
             border-left-color: transparent;
-        }
-        
-        /* Dropdown Menu */
-        .admin-sidebar-menu .dropdown {
-            position: relative;
-        }
-        
-        .admin-sidebar-menu .dropdown-toggle {
-            cursor: pointer;
-        }
-        
-        .admin-sidebar-menu .dropdown-toggle::after {
-            content: '\f107';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            margin-left: auto;
-            transition: transform 0.3s ease;
-        }
-        
-        .admin-sidebar-menu .dropdown.active .dropdown-toggle::after {
-            transform: rotate(180deg);
-        }
-        
-        .admin-sidebar-menu .dropdown-menu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            padding-left: 20px;
-        }
-        
-        .admin-sidebar-menu .dropdown.active .dropdown-menu {
-            max-height: 500px;
-        }
-        
-        .admin-sidebar-menu .dropdown-menu a {
-            padding: 10px 20px 10px 48px;
-            margin: 2px 8px;
-            font-size: 13px;
-            position: relative;
-        }
-        
-        .admin-sidebar-menu .dropdown-menu a::before {
-            content: '→';
-            position: absolute;
-            left: 28px;
-            font-size: 12px;
-            opacity: 0.6;
-        }
-        
-        .admin-sidebar-menu .dropdown-menu a.active {
-            padding-left: 48px;
         }
         
         /* Main Content */
@@ -286,21 +233,16 @@ if (!function_exists('renderAdminLayout')) {
         }
         
         .admin-topbar a.topbar-link-view {
-            background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+            background: linear-gradient(135deg, <?= $primaryColor ?> 0%, <?= $primaryDark ?> 100%);
             color: #ffffff;
-            box-shadow: 0 3px 10px rgba(34, 113, 177, 0.3), 0 1px 3px rgba(34, 113, 177, 0.2), inset 0 1px 0 rgba(255,255,255,.2);
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3), 0 1px 3px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255,255,255,.2);
         }
         
         .admin-topbar a.topbar-link-view:hover {
-            background: linear-gradient(135deg, #135e96 0%, #0f4c75 100%);
+            background: linear-gradient(135deg, <?= $primaryDark ?> 0%, #047857 100%);
             color: #fff;
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(34, 113, 177, 0.4), 0 3px 8px rgba(34, 113, 177, 0.3), inset 0 1px 0 rgba(255,255,255,.2);
-        }
-        
-        .admin-topbar a.topbar-link-view:active {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(34, 113, 177, 0.3), inset 0 2px 4px rgba(0,0,0,.1);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4), 0 3px 8px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,.2);
         }
         
         .admin-topbar a.topbar-link-logout {
@@ -314,16 +256,6 @@ if (!function_exists('renderAdminLayout')) {
             color: #fff;
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(214, 54, 56, 0.4), 0 3px 8px rgba(214, 54, 56, 0.3), inset 0 1px 0 rgba(255,255,255,.2);
-        }
-        
-        .admin-topbar a.topbar-link-logout:active {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(214, 54, 56, 0.3), inset 0 2px 4px rgba(0,0,0,.1);
-        }
-        
-        .admin-topbar a i {
-            font-size: 14px;
-            font-weight: 600;
         }
         
         .admin-content {
@@ -346,7 +278,6 @@ if (!function_exists('renderAdminLayout')) {
             letter-spacing: -0.3px;
         }
         
-        /* Mobile Menu Toggle */
         .admin-menu-toggle {
             display: none;
             background: none;
@@ -379,7 +310,6 @@ if (!function_exists('renderAdminLayout')) {
             }
         }
         
-        /* Overlay for mobile */
         .admin-overlay {
             display: none;
             position: fixed;
@@ -395,7 +325,7 @@ if (!function_exists('renderAdminLayout')) {
             display: block;
         }
         
-        /* Global Admin Styles */
+        /* Global Styles - Dosen Theme */
         .card {
             background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
             border: 1px solid rgba(0,0,0,.06);
@@ -415,7 +345,7 @@ if (!function_exists('renderAdminLayout')) {
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #2271b1 0%, #135e96 50%, #2271b1 100%);
+            background: linear-gradient(90deg, <?= $primaryColor ?> 0%, <?= $primaryDark ?> 50%, <?= $primaryColor ?> 100%);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -423,7 +353,7 @@ if (!function_exists('renderAdminLayout')) {
         .card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
-            border-color: rgba(34, 113, 177, 0.2);
+            border-color: rgba(16, 185, 129, 0.2);
         }
         
         .card:hover::before {
@@ -449,92 +379,8 @@ if (!function_exists('renderAdminLayout')) {
             left: 0;
             width: 50px;
             height: 2px;
-            background: linear-gradient(90deg, #2271b1 0%, #135e96 100%);
+            background: linear-gradient(90deg, <?= $primaryColor ?> 0%, <?= $primaryDark ?> 100%);
             border-radius: 2px;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 0;
-        }
-        
-        .form-group {
-            flex: 1;
-            min-width: 220px;
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-        }
-        
-        label {
-            font-weight: 600;
-            color: #1d2327;
-            margin-bottom: 10px;
-            font-size: 14px;
-            display: block;
-            font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
-            letter-spacing: -0.1px;
-        }
-        
-        label small {
-            display: block;
-            font-weight: 500;
-            color: #646970;
-            font-size: 13px;
-            margin-top: 6px;
-            line-height: 1.5;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        
-        input[type="text"],
-        input[type="number"],
-        input[type="email"],
-        input[type="url"],
-        input[type="file"],
-        select,
-        textarea {
-            padding: 14px 18px;
-            border: 2px solid #e8e8e8;
-            border-radius: 10px;
-            font-size: 14px;
-            background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 100%;
-            color: #2c3338;
-            font-family: 'Plus Jakarta Sans', 'Poppins', sans-serif;
-            font-weight: 500;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.04);
-        }
-        
-        input:hover,
-        select:hover,
-        textarea:hover {
-            border-color: #2271b1;
-            background: #fff;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,.04), 0 2px 8px rgba(34, 113, 177, 0.1);
-            transform: translateY(-1px);
-        }
-        
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #2271b1;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(34, 113, 177, 0.12), 0 4px 12px rgba(34, 113, 177, 0.15);
-            transform: translateY(-2px);
-        }
-        
-        input::placeholder,
-        textarea::placeholder {
-            color: #8c8f94;
-        }
-        
-        textarea {
-            min-height: 100px;
-            resize: vertical;
         }
         
         .btn {
@@ -543,7 +389,7 @@ if (!function_exists('renderAdminLayout')) {
             padding: 14px 28px;
             font-weight: 600;
             color: #fff;
-            background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+            background: linear-gradient(135deg, <?= $primaryColor ?> 0%, <?= $primaryDark ?> 100%);
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 14px;
@@ -551,37 +397,15 @@ if (!function_exists('renderAdminLayout')) {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 4px 12px rgba(34, 113, 177, 0.3), 0 2px 4px rgba(34, 113, 177, 0.2), inset 0 1px 0 rgba(255,255,255,.2);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3), 0 2px 4px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255,255,255,.2);
             font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
             letter-spacing: 0.2px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
-            transition: left 0.5s ease;
         }
         
         .btn:hover {
-            background: linear-gradient(135deg, #135e96 0%, #0f4c75 100%);
-            box-shadow: 0 6px 20px rgba(34, 113, 177, 0.4), 0 4px 8px rgba(34, 113, 177, 0.3), inset 0 1px 0 rgba(255,255,255,.2);
+            background: linear-gradient(135deg, <?= $primaryDark ?> 0%, #047857 100%);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4), 0 4px 8px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,.2);
             transform: translateY(-3px);
-        }
-        
-        .btn:hover::before {
-            left: 100%;
-        }
-        
-        .btn:active {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(34, 113, 177, 0.3), inset 0 2px 4px rgba(0,0,0,.1);
         }
         
         .btn.secondary {
@@ -589,13 +413,6 @@ if (!function_exists('renderAdminLayout')) {
             color: #495057;
             border: 2px solid #e9ecef;
             box-shadow: 0 2px 6px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.8);
-        }
-        
-        .btn.secondary:hover {
-            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
-            border-color: #dee2e6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.8);
         }
         
         .btn.danger {
@@ -615,36 +432,18 @@ if (!function_exists('renderAdminLayout')) {
             margin-bottom: 20px;
             font-size: 14px;
             border-left: 4px solid;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 500;
-            line-height: 1.6;
-        }
-        
-        .alert i {
-            font-size: 18px;
         }
         
         .alert-success {
             background: #f0f9f4;
             color: #1e7e34;
-            border-left-color: #00a32a;
-        }
-        
-        .alert-success i {
-            color: #00a32a;
+            border-left-color: <?= $primaryColor ?>;
         }
         
         .alert-error {
             background: #fef7f7;
             color: #b32d2e;
             border-left-color: #d63638;
-        }
-        
-        .alert-error i {
-            color: #d63638;
         }
         
         table {
@@ -671,56 +470,43 @@ if (!function_exists('renderAdminLayout')) {
             font-size: 11px;
             letter-spacing: 0.8px;
             background: linear-gradient(180deg, #f8f9fa 0%, #f0f0f0 100%);
-            font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
-            border-bottom: 2px solid #e0e0e0;
         }
         
-        td {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 500;
-            color: #2c3338;
-            background: #fff;
-            transition: all 0.2s ease;
-        }
-        
-        tr:hover td {
-            background: linear-gradient(180deg, #fafbfc 0%, #f5f6f7 100%);
-            transform: scale(1.01);
-        }
-        
-        tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .actions {
+        .form-group {
+            flex: 1;
+            min-width: 220px;
             display: flex;
-            gap: 8px;
+            flex-direction: column;
+            margin-bottom: 20px;
         }
         
-        /* Text & Description Styling */
-        p, .description, .text-muted {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 500;
-            line-height: 1.7;
-            color: #495057;
+        label {
+            font-weight: 600;
+            color: #1d2327;
+            margin-bottom: 10px;
             font-size: 14px;
         }
         
-        small, .small-text {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 500;
-            font-size: 13px;
-            line-height: 1.6;
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        select,
+        textarea {
+            padding: 14px 18px;
+            border: 2px solid #e8e8e8;
+            border-radius: 10px;
+            font-size: 14px;
+            background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
         }
         
-        @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-            }
-            
-            .card {
-                padding: 15px;
-            }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: <?= $primaryColor ?>;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12), 0 4px 12px rgba(16, 185, 129, 0.15);
         }
     </style>
 </head>
@@ -730,71 +516,26 @@ if (!function_exists('renderAdminLayout')) {
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="admin-sidebar-header">
                 <div class="admin-sidebar-logo">
-                    <i class="fas fa-cogs"></i>
+                    <i class="fas fa-chalkboard-teacher"></i>
                 </div>
-                <h1>AdminCrims</h1>
+                <h1>Dashboard Dosen</h1>
             </div>
             <nav class="admin-sidebar-menu">
-                <a href="/crims/admin/dashboard.php" <?= $activePage === 'dashboard' || $activePage === 'home' ? 'class="active"' : '' ?>>
-                    <i class="fas fa-home"></i>
-                    <span>Beranda</span>
-                </a>
-                <a href="/crims/admin/dashboard.php" <?= $activePage === 'dashboard' ? 'class="active"' : '' ?>>
+                <a href="/crims/dosen/dashboard.php" <?= $activePage === 'dashboard' ? 'class="active"' : '' ?>>
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/crims/admin/users.php" <?= $activePage === 'users' ? 'class="active"' : '' ?>>
-                    <i class="fas fa-user-cog"></i>
-                    <span>Users</span>
-                </a>
-                <a href="/crims/admin/team.php" <?= $activePage === 'team' ? 'class="active"' : '' ?>>
-                    <i class="fas fa-users"></i>
-                    <span>Struktur Tim Riset</span>
-                </a>
-                <a href="/crims/admin/projects.php" <?= $activePage === 'projects' ? 'class="active"' : '' ?>>
-                    <i class="fas fa-project-diagram"></i>
-                    <span>Project</span>
-                </a>
-                <a href="/crims/admin/news.php" <?= $activePage === 'news' ? 'class="active"' : '' ?>>
-                    <i class="fas fa-newspaper"></i>
-                    <span>Berita</span>
-                </a>
-                <a href="/crims/admin/partners.php" <?= $activePage === 'partners' ? 'class="active"' : '' ?>>
-                    <i class="fas fa-handshake"></i>
-                    <span>Mitra</span>
-                </a>
-                <a href="/crims/admin/achievements.php" <?= $activePage === 'achievements' ? 'class="active"' : '' ?>>
+                <a href="/crims/dosen/achievements.php" <?= $activePage === 'achievements' ? 'class="active"' : '' ?>>
                     <i class="fas fa-trophy"></i>
                     <span>Prestasi</span>
                 </a>
-                <a href="/crims/admin/pengabdian.php" <?= $activePage === 'pengabdian' ? 'class="active"' : '' ?>>
-                    <i class="fas fa-hands-helping"></i>
-                    <span>Pengabdian</span>
+                <a href="/crims/dosen/news.php" <?= $activePage === 'news' ? 'class="active"' : '' ?>>
+                    <i class="fas fa-newspaper"></i>
+                    <span>Berita</span>
                 </a>
-                <div class="dropdown" id="studentDropdown">
-                    <a href="#" class="dropdown-toggle" <?= in_array($activePage, ['skripsi', 'tesis', 'disertasi']) ? 'class="dropdown-toggle active"' : 'class="dropdown-toggle"' ?>>
-                        <i class="fas fa-user-graduate"></i>
-                        <span>Student</span>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="/crims/admin/skripsi.php" <?= $activePage === 'skripsi' ? 'class="active"' : '' ?>>
-                            <span>Skripsi</span>
-                        </a>
-                        <a href="/crims/admin/tesis.php" <?= $activePage === 'tesis' ? 'class="active"' : '' ?>>
-                            <span>Tesis</span>
-                        </a>
-                        <a href="/crims/admin/disertasi.php" <?= $activePage === 'disertasi' ? 'class="active"' : '' ?>>
-                            <span>Disertasi</span>
-                        </a>
-                    </div>
-                </div>
-                <a href="/crims/admin/tentang.php" <?= $activePage === 'tentang' ? 'class="active"' : '' ?>>
-                    <i class="fas fa-info-circle"></i>
-                    <span>Tentang</span>
-                </a>
-                <a href="#" class="disabled" title="Segera hadir">
-                    <i class="fas fa-star"></i>
-                    <span>Hilirisasi</span>
+                <a href="/crims/dosen/projects.php" <?= $activePage === 'projects' ? 'class="active"' : '' ?>>
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Proyek</span>
                 </a>
             </nav>
         </aside>
@@ -829,7 +570,6 @@ if (!function_exists('renderAdminLayout')) {
     <div class="admin-overlay" id="adminOverlay"></div>
     
     <script>
-        // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('adminSidebar');
         const overlay = document.getElementById('adminOverlay');
@@ -847,24 +587,7 @@ if (!function_exists('renderAdminLayout')) {
                 overlay.classList.remove('open');
             });
         }
-        
-        // Dropdown toggle for Student menu
-        const studentDropdown = document.getElementById('studentDropdown');
-        if (studentDropdown) {
-            const dropdownToggle = studentDropdown.querySelector('.dropdown-toggle');
-            if (dropdownToggle) {
-                dropdownToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    studentDropdown.classList.toggle('active');
-                });
-            }
-        }
     </script>
-    
-    <!-- Summernote JS (hanya untuk halaman yang membutuhkan) -->
-    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($content, 'id="description"') !== false): ?>
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
-    <?php endif; ?>
 </body>
 </html>
         <?php

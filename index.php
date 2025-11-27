@@ -16,7 +16,7 @@ if ($projectQuery) {
 }
 
 $newsItems = [];
-$newsQuery = $mysqli->query('SELECT id, title, summary, image_url, article_url, published_at, created_at FROM news_items ORDER BY sort_order ASC, published_at DESC, created_at DESC LIMIT 6');
+$newsQuery = $mysqli->query('SELECT n.id, n.title, n.summary, n.image_url, n.article_url, n.published_at, n.created_at, n.created_by, u.role, u.full_name, u.username FROM news_items n LEFT JOIN users u ON n.created_by = u.id ORDER BY n.sort_order ASC, n.published_at DESC, n.created_at DESC LIMIT 6');
 if ($newsQuery) {
     $newsItems = $newsQuery->fetch_all(MYSQLI_ASSOC);
     $newsQuery->free();
@@ -29,9 +29,9 @@ $hasImageColumn = $checkColumn && $checkColumn->num_rows > 0;
 if ($checkColumn) $checkColumn->free();
 
 if ($hasImageColumn) {
-    $achievementQuery = $mysqli->query('SELECT id, title, description, icon_class, image_url, created_at FROM achievement_items ORDER BY sort_order ASC, created_at DESC LIMIT 6');
+    $achievementQuery = $mysqli->query('SELECT a.id, a.title, a.description, a.icon_class, a.image_url, a.created_at, a.created_by, u.role, u.full_name, u.username FROM achievement_items a LEFT JOIN users u ON a.created_by = u.id ORDER BY a.sort_order ASC, a.created_at DESC LIMIT 6');
 } else {
-    $achievementQuery = $mysqli->query('SELECT id, title, description, icon_class, NULL as image_url, created_at FROM achievement_items ORDER BY sort_order ASC, created_at DESC LIMIT 6');
+    $achievementQuery = $mysqli->query('SELECT a.id, a.title, a.description, a.icon_class, NULL as image_url, a.created_at, a.created_by, u.role, u.full_name, u.username FROM achievement_items a LEFT JOIN users u ON a.created_by = u.id ORDER BY a.sort_order ASC, a.created_at DESC LIMIT 6');
 }
 if ($achievementQuery) {
     $achievementItems = $achievementQuery->fetch_all(MYSQLI_ASSOC);
@@ -68,8 +68,10 @@ $slug = 'about_features';
 $stmt->bind_param('s', $slug);
 $stmt->execute();
 $result = $stmt->get_result();
-if ($row = $result->fetch_assoc() && $row['content']) {
-    $aboutFeatures = json_decode($row['content'], true) ?: [];
+if ($row = $result->fetch_assoc()) {
+    if (!empty($row['content'])) {
+        $aboutFeatures = json_decode($row['content'], true) ?: [];
+    }
 }
 $stmt->close();
 
@@ -132,6 +134,7 @@ function newsImageSrc(?string $path): string {
         <div class="loader-content">
             <div class="loader-spinner"></div>
             <div class="loader-text">CRIMS</div>
+            <div class="loader-subtext">Loading...</div>
         </div>
     </div>
     
@@ -251,7 +254,7 @@ function newsImageSrc(?string $path): string {
             <div class="projects-slider-wrapper">
                 <div class="projects-slider" id="projectsSlider">
                     <?php foreach ($projectItems as $project): ?>
-                    <div class="project-card">
+                    <div class="project-card" onclick="window.location.href='/crims/project_detail.php?id=<?= $project['id'] ?>'" style="cursor: pointer;">
                         <div class="project-image">
                             <img src="<?= htmlspecialchars(projectImageSrc($project['image_url'])) ?>" alt="<?= htmlspecialchars($project['title']) ?>">
                         </div>
@@ -263,11 +266,7 @@ function newsImageSrc(?string $path): string {
                             <?php if (!empty($project['summary'])): ?>
                                 <p><?= htmlspecialchars($project['summary']) ?></p>
                             <?php endif; ?>
-                            <?php if (!empty($project['detail_url'])): ?>
-                                <a href="<?= htmlspecialchars($project['detail_url']) ?>" class="btn-link" target="_blank">Selengkapnya <i class="fas fa-arrow-right"></i></a>
-                            <?php else: ?>
-                                <a href="#" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
-                            <?php endif; ?>
+                            <a href="/crims/project_detail.php?id=<?= $project['id'] ?>" class="btn-link" onclick="event.stopPropagation();">Selengkapnya <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -289,12 +288,15 @@ function newsImageSrc(?string $path): string {
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Berita Terbaru</h2>
-                <a href="/berita.html" class="btn-link">Lihat Semua Berita <i class="fas fa-arrow-right"></i></a>
+                <a href="/crims/berita.php" class="btn-link">Lihat Semua Berita <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="news-grid">
                 <?php foreach ($newsItems as $index => $news): 
-                    $uploaderRole = 'admin';
-                    $uploaderName = 'Admin';
+                    // Get uploader info from database
+                    $uploaderRole = $news['role'] ?? 'admin';
+                    $uploaderName = !empty($news['full_name']) ? $news['full_name'] : ($news['username'] ?? 'Admin');
+                    // Capitalize first letter of role for display
+                    $uploaderRoleDisplay = ucfirst($uploaderRole);
                     $newsDate = !empty($news['published_at']) ? $news['published_at'] : $news['created_at'];
                 ?>
                     <a href="/crims/news_detail.php?id=<?= $news['id'] ?>" class="news-card-link <?= $index % 2 === 0 ? 'news-vertical' : 'news-horizontal' ?>">
@@ -312,11 +314,11 @@ function newsImageSrc(?string $path): string {
                                         <i class="fas fa-calendar-alt"></i>
                                         <span><?= date('d M Y', strtotime($newsDate)) ?></span>
                     </div>
-                                    <div class="news-uploader" title="Upload oleh <?= htmlspecialchars($uploaderName) ?>">
+                                    <div class="news-uploader" title="Upload oleh <?= htmlspecialchars($uploaderName) ?> (<?= htmlspecialchars($uploaderRoleDisplay) ?>)">
                                         <div class="news-uploader-icon <?= $uploaderRole ?>">
                                             <i class="fas fa-<?= $uploaderRole === 'admin' ? 'user-shield' : ($uploaderRole === 'mahasiswa' ? 'user-graduate' : 'chalkboard-teacher') ?>"></i>
                 </div>
-                                        <span><?= htmlspecialchars($uploaderName) ?></span>
+                                        <span><?= htmlspecialchars($uploaderRoleDisplay) ?></span>
                     </div>
                     </div>
                 </div>
@@ -368,9 +370,11 @@ function newsImageSrc(?string $path): string {
             </div>
             <div class="achievements-modern-grid">
                 <?php foreach ($achievementItems as $index => $achievement): 
-                    // Default role to admin (bisa diubah nanti jika ada kolom role di database)
-                    $uploaderRole = 'admin';
-                    $uploaderName = 'Admin';
+                    // Get uploader info from database
+                    $uploaderRole = $achievement['role'] ?? 'admin';
+                    $uploaderName = !empty($achievement['full_name']) ? $achievement['full_name'] : ($achievement['username'] ?? 'Admin');
+                    // Capitalize first letter of role for display
+                    $uploaderRoleDisplay = ucfirst($uploaderRole);
                 ?>
                     <a href="/crims/achievement_detail.php?id=<?= $achievement['id'] ?>" class="achievement-modern-card-link">
                         <article class="achievement-modern-card" data-index="<?= $index ?>">
@@ -394,7 +398,7 @@ function newsImageSrc(?string $path): string {
                                     <div class="achievement-modern-content">
                                         <h3><?= htmlspecialchars($achievement['title']) ?></h3>
                                         <?php if (!empty($achievement['description'])): ?>
-                                            <p><?= nl2br(htmlspecialchars($achievement['description'])) ?></p>
+                                            <div><?= $achievement['description'] ?></div>
                                         <?php endif; ?>
                     </div>
                 </div>
@@ -403,11 +407,11 @@ function newsImageSrc(?string $path): string {
                                         <i class="fas fa-calendar-alt"></i>
                                         <span><?= date('d M Y', strtotime($achievement['created_at'])) ?></span>
                     </div>
-                                    <div class="achievement-modern-uploader" title="Upload oleh <?= htmlspecialchars($uploaderName) ?>">
+                                    <div class="achievement-modern-uploader" title="Upload oleh <?= htmlspecialchars($uploaderName) ?> (<?= htmlspecialchars($uploaderRoleDisplay) ?>)">
                                         <div class="achievement-modern-uploader-icon <?= $uploaderRole ?>">
                                             <i class="fas fa-<?= $uploaderRole === 'admin' ? 'user-shield' : ($uploaderRole === 'mahasiswa' ? 'user-graduate' : 'chalkboard-teacher') ?>"></i>
                 </div>
-                                        <span><?= htmlspecialchars($uploaderName) ?></span>
+                                        <span><?= htmlspecialchars($uploaderRoleDisplay) ?></span>
                     </div>
                 </div>
             </div>

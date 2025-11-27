@@ -5,6 +5,7 @@ if (!function_exists('renderAdminNav')) {
         ?>
         <nav class="admin-nav">
             <a href="/crims/admin/dashboard.php" class="<?= $activePage === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
+            <a href="/crims/admin/users.php" class="<?= $activePage === 'users' ? 'active' : '' ?>">Users</a>
             <a href="/crims/admin/team.php" class="<?= $activePage === 'team' ? 'active' : '' ?>">Struktur Tim Riset</a>
             <a href="/crims/admin/projects.php" class="<?= $activePage === 'projects' ? 'active' : '' ?>">Project</a>
             <a href="/crims/admin/news.php" class="<?= $activePage === 'news' ? 'active' : '' ?>">Berita</a>
