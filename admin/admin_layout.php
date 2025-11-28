@@ -487,7 +487,7 @@ if (!function_exists('renderAdminLayout')) {
         .admin-topbar-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
         
         .admin-topbar a {
@@ -496,77 +496,154 @@ if (!function_exists('renderAdminLayout')) {
             font-size: 14px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            border-radius: 8px;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
             font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
             border: none;
             cursor: pointer;
             box-shadow: 0 1px 2px rgba(0,0,0,.08);
-            letter-spacing: 0.2px;
+            letter-spacing: 0.3px;
+            position: relative;
         }
         
         .admin-topbar a.topbar-link-view {
-            background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: #ffffff;
-            box-shadow: 0 3px 10px rgba(34, 113, 177, 0.3), 0 1px 3px rgba(34, 113, 177, 0.2), inset 0 1px 0 rgba(255,255,255,.2);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4), 0 2px 6px rgba(79, 172, 254, 0.3), inset 0 1px 0 rgba(255,255,255,.3);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .admin-topbar a.topbar-link-view::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .admin-topbar a.topbar-link-view:hover::before {
+            left: 100%;
         }
         
         .admin-topbar a.topbar-link-view:hover {
-            background: linear-gradient(135deg, #135e96 0%, #0f4c75 100%);
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
             color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(34, 113, 177, 0.4), 0 3px 8px rgba(34, 113, 177, 0.3), inset 0 1px 0 rgba(255,255,255,.2);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.5), 0 4px 12px rgba(79, 172, 254, 0.4), inset 0 1px 0 rgba(255,255,255,.3);
         }
         
         .admin-topbar a.topbar-link-view:active {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(34, 113, 177, 0.3), inset 0 2px 4px rgba(0,0,0,.1);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4), inset 0 2px 4px rgba(0,0,0,.1);
         }
         
         .admin-topbar a.topbar-link-logout {
-            background: linear-gradient(135deg, #d63638 0%, #b32d2e 100%);
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
             color: #ffffff;
-            box-shadow: 0 3px 10px rgba(214, 54, 56, 0.3), 0 1px 3px rgba(214, 54, 56, 0.2), inset 0 1px 0 rgba(255,255,255,.2);
+            box-shadow: 0 4px 15px rgba(250, 112, 154, 0.4), 0 2px 6px rgba(250, 112, 154, 0.3), inset 0 1px 0 rgba(255,255,255,.3);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .admin-topbar a.topbar-link-logout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .admin-topbar a.topbar-link-logout:hover::before {
+            left: 100%;
         }
         
         .admin-topbar a.topbar-link-logout:hover {
-            background: linear-gradient(135deg, #b32d2e 0%, #8a2424 100%);
+            background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);
             color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(214, 54, 56, 0.4), 0 3px 8px rgba(214, 54, 56, 0.3), inset 0 1px 0 rgba(255,255,255,.2);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(250, 112, 154, 0.5), 0 4px 12px rgba(250, 112, 154, 0.4), inset 0 1px 0 rgba(255,255,255,.3);
         }
         
         .admin-topbar a.topbar-link-logout:active {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(214, 54, 56, 0.3), inset 0 2px 4px rgba(0,0,0,.1);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 15px rgba(250, 112, 154, 0.4), inset 0 2px 4px rgba(0,0,0,.1);
         }
         
         .admin-topbar a i {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .admin-topbar a:hover i {
+            transform: scale(1.2) rotate(5deg);
+        }
+        
+        .admin-topbar a.topbar-link-view:hover i {
+            transform: scale(1.2) rotate(-5deg);
         }
         
         .admin-content {
-            padding: 24px;
-            max-width: 1200px;
-            background: #ffffff;
+            padding: 32px;
+            max-width: 1400px;
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+            min-height: calc(100vh - 56px);
         }
         
         .admin-page-header {
-            margin-bottom: 20px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+            position: relative;
+        }
+        
+        .admin-page-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
         }
         
         .admin-page-header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1d2327;
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin: 0;
             padding: 0;
             font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
-            letter-spacing: -0.3px;
+            letter-spacing: -0.5px;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .admin-page-header h1::before {
+            content: '';
+            width: 4px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
         }
         
         /* Mobile Menu Toggle */
@@ -1031,12 +1108,12 @@ if (!function_exists('renderAdminLayout')) {
                     </button>
                 </div>
                 <div class="admin-topbar-right">
-                    <a href="/crims/" class="topbar-link-view">
-                        <i class="fas fa-external-link-alt"></i>
+                    <a href="/crims/" class="topbar-link-view" target="_blank">
+                        <i class="fas fa-globe"></i>
                         <span>Lihat Situs</span>
                     </a>
                     <a href="/crims/admin/logout.php" class="topbar-link-logout">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <i class="fas fa-power-off"></i>
                         <span>Logout</span>
                     </a>
                 </div>

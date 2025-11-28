@@ -169,7 +169,8 @@ $slug = 'about_features';
 $stmt->bind_param('s', $slug);
 $stmt->execute();
 $result = $stmt->get_result();
-if ($row = $result->fetch_assoc() && $row['content']) {
+$row = $result->fetch_assoc();
+if ($row && !empty($row['content'])) {
     $featuresData = json_decode($row['content'], true) ?: [];
 }
 $stmt->close();
