@@ -63,6 +63,21 @@ if ($achievementQuery) {
     $achievementQuery->free();
 }
 
+// Get Hilirisasi items from database
+$hilirisasiItems = [];
+$hilirisasiQuery = $mysqli->query('SELECT id, title, description, image_url, detail_url, created_at FROM hilirisasi_items ORDER BY sort_order ASC, created_at DESC LIMIT 6');
+if ($hilirisasiQuery) {
+    $hilirisasiItems = $hilirisasiQuery->fetch_all(MYSQLI_ASSOC);
+    $hilirisasiQuery->free();
+}
+
+function hilirisasiImageSrc(?string $path): string {
+    if ($path) {
+        return '/crims/' . ltrim($path, '/');
+    }
+    return 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80';
+}
+
 // Get About Us content from database
 $aboutOverview = null;
 $aboutFeatures = [];
@@ -450,33 +465,53 @@ function newsImageSrc(?string $path): string {
     <?php endif; ?>
 
     <!-- Hilirisasi -->
-    <section class="commercialization" id="hilirisasi">
+    <?php if (!empty($hilirisasiItems)): ?>
+    <section class="latest-news" id="hilirisasi" style="background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);">
         <div class="container">
-            <h2 class="section-title">Hilirisasi</h2>
-            <div class="commercialization-grid">
-                <div class="commercialization-card">
-                    <div class="commercialization-image">
-                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Hilirisasi 1">
-                    </div>
-                    <div class="commercialization-content">
-                        <h3>Teknologi Robot Industri</h3>
-                        <p>Solusi otomasi untuk meningkatkan efisiensi produksi di industri manufaktur</p>
-                        <a href="/hilirisasi/robot-industri" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-                <div class="commercialization-card">
-                    <div class="commercialization-image">
-                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Hilirisasi 2">
-                    </div>
-                    <div class="commercialization-content">
-                        <h3>Sistem Manajemen Kualitas</h3>
-                        <p>Platform digital untuk memantau dan meningkatkan kualitas produk</p>
-                        <a href="/hilirisasi/sistem-kualitas" class="btn-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+            <div class="section-header">
+                <h2 class="section-title">Hilirisasi</h2>
+                <a href="/crims/hilirisasi_all.php" class="btn-link">Lihat Semua Hilirisasi <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <p class="section-subtitle" style="text-align: center; color: var(--gray); margin-top: 10px; max-width: 700px; margin-left: auto; margin-right: auto;">
+                Produk dan teknologi hasil penelitian yang telah dihilirisasikan untuk kepentingan industri dan masyarakat
+            </p>
+            <div class="news-grid">
+                <?php foreach ($hilirisasiItems as $index => $item): ?>
+                    <a href="/crims/hilirisasi_detail.php?id=<?= $item['id'] ?>" class="news-card-link <?= $index % 2 === 0 ? 'news-vertical' : 'news-horizontal' ?>">
+                        <div class="news-card hilirisasi-card" data-index="<?= $index ?>" data-layout="<?= $index % 2 === 0 ? 'vertical' : 'horizontal' ?>">
+                            <div class="news-image">
+                                <img src="<?= htmlspecialchars(hilirisasiImageSrc($item['image_url'])) ?>" alt="<?= htmlspecialchars($item['title']) ?>" loading="lazy">
+                            </div>
+                            <div class="news-content">
+                                <h3><?= htmlspecialchars($item['title']) ?></h3>
+                                <?php if (!empty($item['description'])): ?>
+                                    <div class="news-summary"><?= renderSafeHtml($item['description']) ?></div>
+                                <?php endif; ?>
+                                <div class="news-meta">
+                                    <div class="news-meta-item" title="Tanggal Upload">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span><?= date('d M Y', strtotime($item['created_at'])) ?></span>
+                                    </div>
+                                    <div class="news-meta-item" title="Selengkapnya">
+                                        <i class="fas fa-arrow-right"></i>
+                                        <span>Selengkapnya</span>
+                                    </div>
+                                    <?php if (!empty($item['detail_url'])): ?>
+                                        <a href="<?= htmlspecialchars($item['detail_url']) ?>" target="_blank" class="news-meta-item" title="Lihat Detail" onclick="event.stopPropagation();" style="text-decoration: none; color: inherit;">
+                                            <i class="fas fa-external-link-alt"></i>
+                                            <span>Detail</span>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="news-accent"></div>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Footer -->
     <footer class="footer">

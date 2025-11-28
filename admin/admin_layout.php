@@ -11,7 +11,7 @@ if (!function_exists('renderAdminLayout')) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap 4 CSS (required for Summernote BS4) -->
-    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($pageTitle, 'Achievements') !== false || strpos($content, 'id="description"') !== false || strpos($content, 'id="summary"') !== false || strpos($pageTitle, 'Proyek') !== false || strpos($pageTitle, 'Project') !== false): ?>
+    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($pageTitle, 'Achievements') !== false || strpos($content, 'id="description"') !== false || strpos($content, 'id="summary"') !== false || strpos($pageTitle, 'Proyek') !== false || strpos($pageTitle, 'Project') !== false || strpos($pageTitle, 'Hilirisasi') !== false): ?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <!-- Summernote CSS -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
@@ -1015,8 +1015,8 @@ if (!function_exists('renderAdminLayout')) {
                     <i class="fas fa-info-circle"></i>
                     <span>Tentang</span>
                 </a>
-                <a href="#" class="disabled" title="Segera hadir">
-                    <i class="fas fa-star"></i>
+                <a href="/crims/admin/hilirisasi.php" <?= $activePage === 'hilirisasi' ? 'class="active"' : '' ?>>
+                    <i class="fas fa-industry"></i>
                     <span>Hilirisasi</span>
                 </a>
             </nav>
@@ -1085,7 +1085,7 @@ if (!function_exists('renderAdminLayout')) {
     </script>
     
     <!-- Bootstrap 4 JS (required for Summernote BS4) -->
-    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($pageTitle, 'Achievements') !== false || strpos($content, 'id="description"') !== false || strpos($content, 'id="summary"') !== false || strpos($pageTitle, 'Proyek') !== false || strpos($pageTitle, 'Project') !== false): ?>
+    <?php if (strpos($pageTitle, 'Prestasi') !== false || strpos($pageTitle, 'Achievements') !== false || strpos($content, 'id="description"') !== false || strpos($content, 'id="summary"') !== false || strpos($pageTitle, 'Proyek') !== false || strpos($pageTitle, 'Project') !== false || strpos($pageTitle, 'Hilirisasi') !== false): ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>

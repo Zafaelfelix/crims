@@ -12,7 +12,7 @@ if (!function_exists('renderAdminNav')) {
             <a href="/crims/admin/partners.php" class="<?= $activePage === 'partners' ? 'active' : '' ?>">Mitra</a>
             <a href="/crims/admin/achievements.php" class="<?= $activePage === 'achievements' ? 'active' : '' ?>">Prestasi</a>
             <a href="#" class="disabled" title="Segera hadir">Tentang</a>
-            <a href="#" class="disabled" title="Segera hadir">Hilirisasi</a>
+            <a href="/crims/admin/hilirisasi.php" class="<?= $activePage === 'hilirisasi' ? 'active' : '' ?>">Hilirisasi</a>
         </nav>
         <?php
         return ob_get_clean();
